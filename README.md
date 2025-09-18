@@ -1,98 +1,215 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🎁 Wishlist Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Sistema completo de wishlist com autenticação JWT, gerenciamento de dependentes e sistema de reservas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Funcionalidades
 
-## Description
+### 🔐 Autenticação e Usuários
+- **Registro e Login** com JWT
+- **Integração AWS Cognito** para gerenciamento de senhas
+- **Perfis de Usuário** com informações pessoais
+- **Sistema de Seguidores** (follow/unfollow)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 👨‍👩‍👧‍👦 Gerenciamento de Dependentes
+- **Criação de Dependentes** por guardiões
+- **Sistema de Guardiões** com convites
+- **Controle de Permissões** granular
+- **Remoção Segura** de guardiões (com validação do último guardião)
 
-## Project setup
+### 📝 Wishlists e Itens
+- **Criação de Wishlists** pessoais e para dependentes
+- **Gerenciamento de Itens** com metadados completos
+- **Tipos de Itens**: Produtos específicos e genéricos
+- **Controle de Quantidade** desejada e reservada
+- **Arquivamento e Restauração** de wishlists
 
+### 🛒 Sistema de Reservas
+- **Reserva de Itens** com validação de quantidade
+- **Operações Atômicas** para consistência de dados
+- **Status de Reserva** (reservado, confirmado, cancelado)
+- **Histórico de Reservas** por usuário
+
+### 💬 Sistema de Conversas
+- **Conversas Anônimas** entre usuários
+- **Mensagens** com timestamps
+- **Controle de Participantes**
+
+### 📧 Sistema de Convites
+- **Convites para Guardiões** via email
+- **Tokens de Convite** com expiração
+- **Aceitação de Convites** com validação
+
+## 🛠️ Tecnologias
+
+- **Backend**: NestJS + TypeScript
+- **Banco de Dados**: MongoDB + Mongoose
+- **Autenticação**: JWT + AWS Cognito
+- **Validação**: class-validator + class-transformer
+- **Documentação**: Swagger/OpenAPI
+- **Testes**: Jest + Supertest
+
+## 📋 Pré-requisitos
+
+- Node.js 18+
+- MongoDB 5.0+
+- AWS Cognito (opcional)
+- npm ou yarn
+
+## ⚙️ Instalação
+
+### 1. Clone o repositório
 ```bash
-$ npm install
+git clone https://github.com/SEU_USUARIO/wishlist-backend.git
+cd wishlist-backend
 ```
 
-## Compile and run the project
-
+### 2. Instale as dependências
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
-
+### 3. Configure as variáveis de ambiente
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+Edite o arquivo `.env` com suas configurações:
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/wishlist
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# JWT
+JWT_SECRET=seu-jwt-secret-super-seguro
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+# AWS Cognito (opcional)
+AWS_REGION=us-east-1
+COGNITO_USER_POOL_ID=seu-user-pool-id
+COGNITO_CLIENT_ID=seu-client-id
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Email (opcional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=seu-email@gmail.com
+SMTP_PASS=sua-senha-app
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Configure o MongoDB
+```bash
+# Opção 1: Docker (recomendado)
+docker-compose up -d
 
-## Resources
+# Opção 2: Instalação local
+./setup-mongodb.sh
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 5. Execute o projeto
+```bash
+# Desenvolvimento
+npm run start:dev
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Produção
+npm run build
+npm run start:prod
+```
 
-## Support
+## 📚 Documentação da API
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Após iniciar o servidor, acesse:
+- **Swagger UI**: http://localhost:3000/api
+- **JSON Schema**: http://localhost:3000/api-json
 
-## Stay in touch
+## 🏗️ Arquitetura
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
+src/
+├── application/          # Casos de uso e DTOs
+│   ├── dtos/            # Data Transfer Objects
+│   └── use-cases/       # Lógica de negócio
+├── domain/              # Entidades e interfaces
+│   ├── entities/        # Entidades de domínio
+│   ├── enums/           # Enumerações
+│   └── repositories/    # Interfaces dos repositórios
+└── infrastructure/      # Implementações
+    ├── controllers/     # Controllers REST
+    ├── database/        # Schemas e repositórios MongoDB
+    └── services/        # Serviços externos
+```
 
-## License
+## 🔒 Segurança
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **Senhas**: Hash com bcrypt + AWS Cognito
+- **JWT**: Tokens seguros com expiração
+- **Validação**: DTOs com class-validator
+- **Sanitização**: Prevenção de XSS e injection
+- **CORS**: Configurado para produção
+
+## 🧪 Testes
+
+```bash
+# Testes unitários
+npm run test
+
+# Testes e2e
+npm run test:e2e
+
+# Cobertura
+npm run test:cov
+```
+
+## 📦 Scripts Disponíveis
+
+```bash
+npm run start          # Inicia em produção
+npm run start:dev      # Inicia em desenvolvimento
+npm run start:debug    # Inicia em modo debug
+npm run build          # Compila o projeto
+npm run test           # Executa testes
+npm run test:e2e       # Executa testes e2e
+npm run lint           # Executa linter
+npm run format         # Formata código
+```
+
+## 🚀 Deploy
+
+### Docker
+```bash
+docker build -t wishlist-backend .
+docker run -p 3000:3000 wishlist-backend
+```
+
+### Heroku
+```bash
+# Configure as variáveis de ambiente no Heroku
+heroku config:set MONGODB_URI=sua-uri-mongodb
+heroku config:set JWT_SECRET=seu-jwt-secret
+
+# Deploy
+git push heroku main
+```
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 👥 Autores
+
+- **Diego** - *Desenvolvimento inicial* - [GitHub](https://github.com/seu-usuario)
+
+## 🙏 Agradecimentos
+
+- NestJS team pela excelente framework
+- MongoDB pela robustez do banco de dados
+- AWS pela infraestrutura de autenticação
+- Comunidade open source pelo suporte
+
+---
+
+⭐ **Se este projeto te ajudou, considere dar uma estrela!** ⭐

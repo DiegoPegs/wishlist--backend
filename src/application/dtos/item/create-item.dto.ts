@@ -1,0 +1,144 @@
+import { Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  IsUrl,
+  ValidateNested,
+  Min,
+  Max,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ItemType } from '../../../domain/entities/item.entity';
+
+export class CreateQuantityDto {
+  @ApiProperty({
+    description: 'Quantidade desejada do item',
+    example: 2,
+    type: 'number',
+    minimum: 1,
+    maximum: 100,
+  })
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  desired: number;
+
+  @ApiProperty({
+    description: 'Quantidade reservada do item',
+    example: 0,
+    type: 'number',
+    minimum: 0,
+    maximum: 100,
+  })
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  reserved: number;
+
+  @ApiProperty({
+    description: 'Quantidade recebida do item',
+    example: 0,
+    type: 'number',
+    minimum: 0,
+    maximum: 100,
+  })
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  received: number;
+}
+
+export class CreatePriceRangeDto {
+  @ApiPropertyOptional({
+    description: 'Preço mínimo do item',
+    example: 29.99,
+    type: 'number',
+    minimum: 0,
+  })
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  min?: number;
+
+  @ApiPropertyOptional({
+    description: 'Preço máximo do item',
+    example: 49.99,
+    type: 'number',
+    minimum: 0,
+  })
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  max?: number;
+}
+
+export class CreateItemDto {
+  @ApiProperty({
+    description: 'Título do item',
+    example: 'Livro: Clean Code',
+    type: 'string',
+    minLength: 3,
+    maxLength: 200,
+  })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @ApiProperty({
+    description: 'Tipo do item',
+    example: ItemType.SPECIFIC_PRODUCT,
+    enum: ItemType,
+  })
+  @IsEnum(ItemType)
+  itemType: ItemType;
+
+  @ApiPropertyOptional({
+    description: 'Informações de quantidade do item',
+    type: CreateQuantityDto,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateQuantityDto)
+  quantity?: CreateQuantityDto;
+
+  @ApiPropertyOptional({
+    description: 'Link para o produto',
+    example: 'https://www.amazon.com/clean-code-book',
+    type: 'string',
+  })
+  @IsOptional()
+  @IsUrl()
+  link?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL da imagem do item',
+    example: 'https://images.example.com/item-image.jpg',
+    type: 'string',
+  })
+  @IsOptional()
+  @IsUrl()
+  imageUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'Faixa de preço do item',
+    type: CreatePriceRangeDto,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreatePriceRangeDto)
+  price?: CreatePriceRangeDto;
+
+  @ApiPropertyOptional({
+    description: 'Notas adicionais sobre o item',
+    example: 'Preferir cor azul, tamanho M',
+    type: 'string',
+    maxLength: 500,
+  })
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}

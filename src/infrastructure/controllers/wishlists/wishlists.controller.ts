@@ -25,6 +25,23 @@ export class WishlistsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Criar nova wishlist',
+    description: 'Cria uma nova lista de desejos para o usuário autenticado',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Wishlist criada com sucesso',
+    type: Wishlist,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos fornecidos',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
   async createWishlist(
     @Body() createWishlistDto: CreateWishlistDto,
     @GetUser() user: User,
@@ -39,6 +56,19 @@ export class WishlistsController {
   }
 
   @Get('mine')
+  @ApiOperation({
+    summary: 'Listar minhas wishlists',
+    description: 'Retorna todas as wishlists do usuário autenticado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de wishlists obtida com sucesso',
+    type: [Wishlist],
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
   async getMyWishlists(@GetUser() user: User): Promise<Wishlist[]> {
     if (!user._id) {
       throw new Error('User ID not found');
@@ -216,6 +246,36 @@ export class WishlistsController {
 
   @Post(':id/items')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Adicionar item à wishlist',
+    description: 'Adiciona um novo item a uma wishlist específica',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Item adicionado com sucesso',
+    type: Item,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos fornecidos',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Wishlist não encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para adicionar itens a esta wishlist',
+  })
   async createItem(
     @Param('id') wishlistId: string,
     @Body() createItemDto: CreateItemDto,

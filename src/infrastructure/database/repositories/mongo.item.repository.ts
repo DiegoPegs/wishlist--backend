@@ -47,6 +47,17 @@ export class MongoItemRepository implements IItemRepository {
     return updatedItem ? this.toDomain(updatedItem) : null;
   }
 
+  async incrementReceivedQuantity(_id: string, quantity: number): Promise<Item | null> {
+    const updatedItem = await this.itemModel
+      .findByIdAndUpdate(
+        _id,
+        { $inc: { 'quantity.received': quantity } },
+        { new: true }
+      )
+      .exec();
+    return updatedItem ? this.toDomain(updatedItem) : null;
+  }
+
   async delete(_id: string): Promise<boolean> {
     const result = await this.itemModel.findByIdAndDelete(_id).exec();
     return !!result;

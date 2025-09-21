@@ -93,29 +93,6 @@ export class UsersController {
     );
   }
 
-  @Get(':username')
-  @ApiOperation({
-    summary: 'Obter usuário por username',
-    description:
-      'Retorna os dados públicos de um usuário específico pelo seu username',
-  })
-  @ApiParam({
-    name: 'username',
-    description: 'Nome de usuário único',
-    example: 'joao.silva',
-    type: 'string',
-  })
-  @ApiOkResponse({
-    description: 'Dados do usuário obtidos com sucesso',
-    type: User,
-  })
-  @ApiNotFoundResponse({
-    description: 'Usuário não encontrado',
-  })
-  async getUserByUsername(@Param('username') username: string): Promise<User> {
-    return await this.usersService.getUserByUsername(username);
-  }
-
   @Get('me/dependents')
   @ApiOperation({
     summary: 'Listar dependentes do usuário',
@@ -416,6 +393,40 @@ export class UsersController {
 
   @Post(':username/follow')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Seguir usuário',
+    description: 'Inicia o seguimento de outro usuário',
+  })
+  @ApiParam({
+    name: 'username',
+    description: 'Nome de usuário a ser seguido',
+    example: 'joao.silva',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário seguido com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Usuário seguido com sucesso',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Não é possível seguir a si mesmo',
+  })
   async followUser(
     @Param('username') username: string,
     @GetUser() user: User,
@@ -428,6 +439,36 @@ export class UsersController {
 
   @Delete(':username/follow')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Deixar de seguir usuário',
+    description: 'Para de seguir outro usuário',
+  })
+  @ApiParam({
+    name: 'username',
+    description: 'Nome de usuário a deixar de seguir',
+    example: 'joao.silva',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário deixado de seguir com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Usuário deixado de seguir com sucesso',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado',
+  })
   async unfollowUser(
     @Param('username') username: string,
     @GetUser() user: User,
@@ -439,11 +480,47 @@ export class UsersController {
   }
 
   @Get(':username/followers')
+  @ApiOperation({
+    summary: 'Obter seguidores do usuário',
+    description: 'Retorna a lista de seguidores de um usuário específico',
+  })
+  @ApiParam({
+    name: 'username',
+    description: 'Nome de usuário',
+    example: 'joao.silva',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de seguidores obtida com sucesso',
+    type: [User],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado',
+  })
   async getFollowers(@Param('username') username: string): Promise<User[]> {
     return await this.usersService.getFollowers(username);
   }
 
   @Get(':username/following')
+  @ApiOperation({
+    summary: 'Obter usuários seguidos',
+    description: 'Retorna a lista de usuários que um usuário específico está seguindo',
+  })
+  @ApiParam({
+    name: 'username',
+    description: 'Nome de usuário',
+    example: 'joao.silva',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de usuários seguidos obtida com sucesso',
+    type: [User],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado',
+  })
   async getFollowing(@Param('username') username: string): Promise<User[]> {
     return await this.usersService.getFollowing(username);
   }
@@ -488,5 +565,28 @@ export class UsersController {
       dependentId,
       user._id.toString(),
     );
+  }
+
+  @Get(':username')
+  @ApiOperation({
+    summary: 'Obter usuário por username',
+    description:
+      'Retorna os dados públicos de um usuário específico pelo seu username',
+  })
+  @ApiParam({
+    name: 'username',
+    description: 'Nome de usuário único',
+    example: 'joao.silva',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Dados do usuário obtidos com sucesso',
+    type: User,
+  })
+  @ApiNotFoundResponse({
+    description: 'Usuário não encontrado',
+  })
+  async getUserByUsername(@Param('username') username: string): Promise<User> {
+    return await this.usersService.getUserByUsername(username);
   }
 }

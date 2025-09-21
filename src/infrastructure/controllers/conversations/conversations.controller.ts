@@ -7,6 +7,13 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { SendMessageDto } from '../../../application/dtos/conversation/send-message.dto';
 import { AnonymizedMessageDto } from '../../../application/dtos/conversation/anonymized-message.dto';
 import { ConversationsService } from './conversations.service';
@@ -14,12 +21,36 @@ import { GetUser } from '../users/get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
 import { Conversation } from '../../../domain/entities/conversation.entity';
 
+@ApiTags('Conversations')
+@ApiBearerAuth()
 @Controller('conversations')
 export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
   @Post('items/:itemId/start')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Iniciar conversa sobre item',
+    description: 'Inicia uma conversa anônima sobre um item específico',
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID do item sobre o qual iniciar a conversa',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Conversa iniciada com sucesso',
+    type: Conversation,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Item não encontrado',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para iniciar conversa sobre este item',
+  })
   async startConversation(
     @Param('itemId') itemId: string,
     @GetUser() user: User,
@@ -34,6 +65,28 @@ export class ConversationsController {
   }
 
   @Get(':id/messages')
+  @ApiOperation({
+    summary: 'Obter mensagens da conversa',
+    description: 'Retorna todas as mensagens de uma conversa específica (anonimizadas)',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da conversa',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Mensagens obtidas com sucesso',
+    type: [AnonymizedMessageDto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Conversa não encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para ver esta conversa',
+  })
   async getConversationMessages(
     @Param('id') conversationId: string,
     @GetUser() user: User,
@@ -49,6 +102,41 @@ export class ConversationsController {
 
   @Post(':id/messages')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Enviar mensagem na conversa',
+    description: 'Envia uma mensagem anônima em uma conversa específica',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da conversa',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Mensagem enviada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Mensagem enviada',
+        },
+        timestamp: {
+          type: 'string',
+          format: 'date-time',
+          example: '2024-01-15T10:30:00Z',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Conversa não encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para enviar mensagem nesta conversa',
+  })
   async sendMessage(
     @Param('id') conversationId: string,
     @GetUser() user: User,

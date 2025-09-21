@@ -77,21 +77,31 @@ export class MarkAsReceivedUseCase {
     }
 
     try {
-      // d. Atualizar dentro de uma transação
-      // i. Atualizar os contadores no item
-      const newQuantity = {
-        ...currentQuantity,
-        received: currentQuantity.received + dto.quantityReceived,
-        reserved: currentQuantity.reserved - dto.quantityReceived, // Reduzir reservados
-      };
+      // d. Atualizar usando operações atômicas
+      // i. Incrementar quantity.received atomicamente
+      await this.itemRepository.incrementReceivedQuantity(
+        itemId,
+        dto.quantityReceived
+      );
 
-      await this.itemRepository.update(itemId, { quantity: newQuantity });
+      // ii. Decrementar quantity.reserved atomicamente
+      await this.itemRepository.incrementReservedQuantity(
+        itemId,
+        -dto.quantityReceived
+      );
 
-      // ii. Atualizar o status na reserva
+      // iii. Verificar se ainda há quantidade reservada para determinar o status
+      const updatedItem = await this.itemRepository.findById(itemId);
+      if (!updatedItem || !updatedItem.quantity) {
+        throw new Error('Failed to retrieve updated item');
+      }
+
       const newReservationStatus =
-        newQuantity.reserved === 0
+        updatedItem.quantity.reserved === 0
           ? ReservationStatus.RECEIVED
           : ReservationStatus.PURCHASED;
+
+      // iv. Atualizar o status na reserva
       await this.reservationRepository.update(reservation._id.toString(), {
         status: newReservationStatus,
       });

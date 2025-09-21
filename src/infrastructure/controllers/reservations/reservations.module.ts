@@ -4,6 +4,8 @@ import { ReservationsController } from './reservations.controller';
 import { ReservationsService } from './reservations.service';
 import { ReserveItemUseCase } from '../../../application/use-cases/reservation/reserve-item.use-case';
 import { GetUserReservationsUseCase } from '../../../application/use-cases/reservation/get-user-reservations.use-case';
+import { GetReservationUseCase } from '../../../application/use-cases/reservation/get-reservation.use-case';
+import { UpdateReservationQuantityUseCase } from '../../../application/use-cases/reservation/update-reservation-quantity.use-case';
 import { ConfirmPurchaseUseCase } from '../../../application/use-cases/reservation/confirm-purchase.use-case';
 import { CancelReservationUseCase } from '../../../application/use-cases/reservation/cancel-reservation.use-case';
 import { MongoReservationRepository } from '../../database/repositories/mongo.reservation.repository';
@@ -35,6 +37,8 @@ import { User, UserSchema } from '../../database/schemas/user.schema';
     ReservationsService,
     ReserveItemUseCase,
     GetUserReservationsUseCase,
+    GetReservationUseCase,
+    UpdateReservationQuantityUseCase,
     ConfirmPurchaseUseCase,
     CancelReservationUseCase,
     {

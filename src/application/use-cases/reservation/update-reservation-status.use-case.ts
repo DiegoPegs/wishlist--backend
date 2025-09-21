@@ -33,8 +33,9 @@ export class UpdateReservationStatusUseCase {
       throw new ForbiddenException('You can only update your own reservations');
     }
 
-    // Verificar se a reserva não está cancelada
-    if (reservation.status === ReservationStatus.CANCELED) {
+    // Verificar se a reserva não está cancelada (exceto se for para cancelar)
+    if (reservation.status === ReservationStatus.CANCELED &&
+        updateReservationStatusDto.status !== ReservationStatus.CANCELED) {
       throw new ForbiddenException('Cannot update canceled reservations');
     }
 

@@ -81,6 +81,9 @@ export class ChangeDesiredQuantityUseCase {
         });
       }
 
+      // TODO: Disparar notificações para os usuários afetados
+      // await this.notificationService.notifyReservationCancelled(reservationsToCancelList);
+
       // Atualizar o contador quantity.reserved
       const newReservedQuantity =
         currentQuantity.reserved - reservationsToCancelList.length;

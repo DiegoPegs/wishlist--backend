@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtAuthGuard } from './infrastructure/controllers/auth/guards/jwt-auth.guard';
 import { AppController } from './infrastructure/controllers/app/app.controller';
 import { AppService } from './infrastructure/services/app.service';
+import { ConfigValidationService } from './infrastructure/services/config-validation.service';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { AuthModule } from './infrastructure/controllers/auth/auth.module';
 import { WishlistsModule } from './infrastructure/controllers/wishlists/wishlists.module';
@@ -33,6 +34,7 @@ import { InvitationsModule } from './infrastructure/controllers/invitations/invi
   controllers: [AppController],
   providers: [
     AppService,
+    ConfigValidationService,
     // --- INÍCIO DA CONFIGURAÇÃO DO GUARD GLOBAL ---
     {
       provide: APP_GUARD,

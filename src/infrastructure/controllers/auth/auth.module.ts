@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
-import { PasswordHasherService } from './password-hasher.service';
 import { RegisterUserUseCase } from '../../../application/use-cases/auth/register-user.use-case';
+import { ConfirmRegistrationUseCase } from '../../../application/use-cases/auth/confirm-registration.use-case';
 import { ChangePasswordUseCase } from '../../../application/use-cases/auth/change-password.use-case';
 import { ForgotPasswordUseCase } from '../../../application/use-cases/auth/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../../../application/use-cases/auth/reset-password.use-case';
@@ -17,9 +18,13 @@ import { User, UserSchema } from '../../database/schemas/user.schema';
 @Module({
   imports: [
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your-secret-key',
-      signOptions: { expiresIn: '24h' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET') || 'your-secret-key',
+        signOptions: { expiresIn: '24h' },
+      }),
+      inject: [ConfigService],
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
@@ -27,8 +32,8 @@ import { User, UserSchema } from '../../database/schemas/user.schema';
   providers: [
     AuthService,
     JwtStrategy,
-    PasswordHasherService,
     RegisterUserUseCase,
+    ConfirmRegistrationUseCase,
     ChangePasswordUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
@@ -36,10 +41,6 @@ import { User, UserSchema } from '../../database/schemas/user.schema';
     {
       provide: 'IUserRepository',
       useClass: MongoUserRepository,
-    },
-    {
-      provide: 'IPasswordHasher',
-      useClass: PasswordHasherService,
     },
   ],
   exports: [AuthService, JwtStrategy],

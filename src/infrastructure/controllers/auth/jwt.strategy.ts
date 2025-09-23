@@ -7,12 +7,14 @@ import { JwtPayload } from '../../../types/jwt.types';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
+    const secret = process.env.JWT_SECRET || 'your-secret-key';
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     super({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'your-secret-key',
+      secretOrKey: secret,
     });
   }
 

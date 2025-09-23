@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Post,
+  Get,
   HttpCode,
   HttpStatus,
   UseGuards,
@@ -18,6 +19,7 @@ import { LoginDto } from '../../../application/dtos/auth/login.dto';
 import { ChangePasswordDto } from '../../../application/dtos/auth/change-password.dto';
 import { ForgotPasswordDto } from '../../../application/dtos/auth/forgot-password.dto';
 import { ResetPasswordDto } from '../../../application/dtos/auth/reset-password.dto';
+import { ConfirmRegistrationDto } from '../../../application/dtos/auth/confirm-registration.dto';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -47,6 +49,17 @@ export class AuthController {
     return await this.authService.login(loginDto);
   }
 
+  @Public()
+  @Post('confirm-registration')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Confirmar registro de usuário' })
+  @ApiResponse({ status: 200, description: 'Registro confirmado com sucesso' })
+  @ApiResponse({ status: 400, description: 'Código de confirmação inválido' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  async confirmRegistration(@Body() confirmRegistrationDto: ConfirmRegistrationDto) {
+    return await this.authService.confirmRegistration(confirmRegistrationDto);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -68,6 +81,17 @@ export class AuthController {
       changePasswordDto,
       accessToken,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('test-auth')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Teste de autenticação' })
+  async testAuth(@Req() req: Request) {
+    console.log('🧪 test-auth - Endpoint chamado');
+    console.log('🧪 test-auth - User:', req.user);
+    console.log('🧪 test-auth - Headers:', req.headers.authorization);
+    return { message: 'Autenticação funcionando!', user: req.user };
   }
 
   @Public()

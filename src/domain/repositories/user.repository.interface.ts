@@ -8,6 +8,7 @@ export interface IUserRepository {
   findByUsername(_username: string): Promise<User | null>;
   findByEmailForAuth(_email: string): Promise<User | null>;
   findByUsernameForAuth(_username: string): Promise<User | null>;
+  findByLogin(login: string): Promise<User | null>;
   findByLoginWithPassword(login: string): Promise<User | null>;
   findByIds(_ids: string[]): Promise<User[]>;
   findDependentsIncludingInactive(_ids: string[]): Promise<User[]>;

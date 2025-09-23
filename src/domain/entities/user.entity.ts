@@ -114,6 +114,14 @@ export class User {
   password?: string;
 
   @ApiPropertyOptional({
+    description: 'ID do usuário no AWS Cognito',
+    example: '12345678-1234-1234-1234-123456789012',
+  })
+  @IsOptional()
+  @IsString()
+  cognitoUserId?: string;
+
+  @ApiPropertyOptional({
     description: 'Nome completo do usuário',
     example: 'João Silva',
     minLength: 2,

@@ -9,6 +9,8 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -34,12 +36,14 @@ import { UsersService } from './users.service';
 import { GetUser } from './get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   @ApiOperation({
     summary: 'Obter dados do usuário atual',
@@ -53,11 +57,12 @@ export class UsersController {
   @ApiUnauthorizedResponse({
     description: 'Token JWT inválido ou expirado',
   })
-  async getCurrentUser(@GetUser() user: User): Promise<User> {
-    if (!user._id) {
-      throw new Error('User ID not found');
+  async getCurrentUser(@Req() req: any): Promise<any> {
+    if (!req.user) {
+      throw new Error('User not found in request');
     }
-    return await this.usersService.getCurrentUser(user._id.toString());
+
+    return await this.usersService.getCurrentUser(req.user._id.toString());
   }
 
   @Put('me/gifting-profile')

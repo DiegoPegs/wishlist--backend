@@ -18,6 +18,9 @@ export class User {
   @Prop({ required: false, select: false }) // 'select: false' impede que a senha retorne em buscas
   password?: string;
 
+  @Prop({ required: false, unique: true, sparse: true }) // ID do usuário no AWS Cognito
+  cognitoUserId?: string;
+
   @Prop({ required: false })
   name?: string;
 

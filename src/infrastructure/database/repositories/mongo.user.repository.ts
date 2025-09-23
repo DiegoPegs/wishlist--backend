@@ -101,6 +101,16 @@ export class MongoUserRepository implements IUserRepository {
     return user ? this.toDomain(user) : null;
   }
 
+  async findByLogin(login: string): Promise<User | null> {
+    const user = await this.userModel
+      .findOne({
+        $or: [{ email: login }, { username: login }],
+        status: UserStatus.ACTIVE,
+      })
+      .exec();
+    return user ? this.toDomain(user) : null;
+  }
+
   async findByLoginWithPassword(login: string): Promise<User | null> {
     const user = await this.userModel
       .findOne({

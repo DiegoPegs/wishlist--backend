@@ -16,6 +16,7 @@ export enum WishlistStatus {
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
+  PENDING_CONFIRMATION = 'PENDING_CONFIRMATION',
 }
 
 export enum InvitationStatus {

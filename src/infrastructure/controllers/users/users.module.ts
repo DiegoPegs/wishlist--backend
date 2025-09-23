@@ -43,6 +43,9 @@ import {
   ConversationSchema,
 } from '../../database/schemas/conversation.schema';
 import { Message, MessageSchema } from '../../database/schemas/message.schema';
+import { EmailService } from '../../services/email.service';
+import { CognitoService } from '../../services/cognito.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -55,6 +58,7 @@ import { Message, MessageSchema } from '../../database/schemas/message.schema';
       { name: Conversation.name, schema: ConversationSchema },
       { name: Message.name, schema: MessageSchema },
     ]),
+    AuthModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -102,23 +106,10 @@ import { Message, MessageSchema } from '../../database/schemas/message.schema';
       useClass: MongoMessageRepository,
     },
     {
-      provide: 'IPasswordHasher',
-      useClass: PasswordHasherService,
-    },
-    {
       provide: 'IEmailService',
-      useValue: {
-        sendInvitationEmail: (
-          _recipientEmail: string,
-          _inviterName: string,
-          _dependentName: string,
-          _token: string,
-        ) => {
-          // TODO: Implementar serviço de email real
-          return true;
-        },
-      },
+      useClass: EmailService,
     },
+    CognitoService,
   ],
   exports: [UsersService],
 })

@@ -13,6 +13,7 @@ import {
   AdminCreateUserCommand,
   AdminSetUserPasswordCommand,
   AdminDeleteUserCommand,
+  GlobalSignOutCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import * as crypto from 'crypto';
 
@@ -225,6 +226,14 @@ export class CognitoService {
       Username: username,
       Password: newPassword,
       Permanent: true,
+    });
+
+    await this.cognitoClient.send(command);
+  }
+
+  async globalSignOut(accessToken: string): Promise<void> {
+    const command = new GlobalSignOutCommand({
+      AccessToken: accessToken,
     });
 
     await this.cognitoClient.send(command);

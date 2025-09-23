@@ -2,11 +2,9 @@ import {
   Body,
   Controller,
   Post,
-  Get,
   HttpCode,
   HttpStatus,
   UseGuards,
-  Req,
 } from '@nestjs/common';
 import { GetAccessToken } from './decorators/get-access-token.decorator';
 import {
@@ -65,11 +63,17 @@ export class AuthController {
   @Post('change-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Alterar senha do usuário' })
+  @ApiOperation({
+    summary: 'Alterar senha do usuário',
+    description: 'Altera a senha do usuário autenticado. A nova senha deve atender aos critérios de segurança do Cognito (mínimo 8 caracteres, incluindo maiúsculas, minúsculas, números e símbolos especiais).'
+  })
   @ApiResponse({ status: 204, description: 'Senha alterada com sucesso' })
-  @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos fornecidos' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
-  @ApiResponse({ status: 400, description: 'Senha atual incorreta' })
+  @ApiResponse({ status: 401, description: 'Senha atual incorreta' })
+  @ApiResponse({ status: 401, description: 'A nova senha deve ser diferente da senha atual' })
+  @ApiResponse({ status: 401, description: 'A nova senha não atende aos critérios de segurança' })
+  @ApiResponse({ status: 401, description: 'Usuário não encontrado no sistema de autenticação' })
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @GetAccessToken() accessToken: string,
@@ -81,14 +85,14 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('test-auth')
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Teste de autenticação' })
-  async testAuth(@Req() req: Request) {
-    console.log('🧪 test-auth - Endpoint chamado');
-    console.log('🧪 test-auth - User:', req.user);
-    console.log('🧪 test-auth - Headers:', req.headers.authorization);
-    return { message: 'Autenticação funcionando!', user: req.user };
+  @ApiOperation({ summary: 'Fazer logout seguro' })
+  @ApiResponse({ status: 204, description: 'Logout realizado com sucesso' })
+  @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
+  async logout(@GetAccessToken() accessToken: string) {
+    return await this.authService.logout(accessToken);
   }
 
   @Public()

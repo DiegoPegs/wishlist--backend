@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { RegisterUserUseCase } from '../../../application/use-cases/auth/register-user.use-case';
 import { ConfirmRegistrationUseCase } from '../../../application/use-cases/auth/confirm-registration.use-case';
 import { ChangePasswordUseCase } from '../../../application/use-cases/auth/change-password.use-case';
+import { LogoutUseCase } from '../../../application/use-cases/auth/logout.use-case';
 import { ForgotPasswordUseCase } from '../../../application/use-cases/auth/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../../../application/use-cases/auth/reset-password.use-case';
 import { CognitoService } from '../../services/cognito.service';
@@ -35,6 +36,7 @@ import { User, UserSchema } from '../../database/schemas/user.schema';
     RegisterUserUseCase,
     ConfirmRegistrationUseCase,
     ChangePasswordUseCase,
+    LogoutUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
     CognitoService,

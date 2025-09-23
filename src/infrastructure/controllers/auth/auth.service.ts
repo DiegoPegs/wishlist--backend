@@ -9,6 +9,7 @@ import { ConfirmRegistrationDto } from '../../../application/dtos/auth/confirm-r
 import { RegisterUserUseCase } from '../../../application/use-cases/auth/register-user.use-case';
 import { ConfirmRegistrationUseCase } from '../../../application/use-cases/auth/confirm-registration.use-case';
 import { ChangePasswordUseCase } from '../../../application/use-cases/auth/change-password.use-case';
+import { LogoutUseCase } from '../../../application/use-cases/auth/logout.use-case';
 import { ForgotPasswordUseCase } from '../../../application/use-cases/auth/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../../../application/use-cases/auth/reset-password.use-case';
 import { CognitoService } from '../../services/cognito.service';
@@ -23,6 +24,7 @@ export class AuthService {
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly confirmRegistrationUseCase: ConfirmRegistrationUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
+    private readonly logoutUseCase: LogoutUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
     private readonly cognitoService: CognitoService,
@@ -179,6 +181,10 @@ export class AuthService {
       changePasswordDto,
       accessToken,
     );
+  }
+
+  async logout(accessToken: string): Promise<void> {
+    return await this.logoutUseCase.execute(accessToken);
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {

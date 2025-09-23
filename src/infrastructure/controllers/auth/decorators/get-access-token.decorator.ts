@@ -11,6 +11,9 @@ export const GetAccessToken = createParamDecorator(
 
     // Retorna apenas o token, sem a parte "Bearer "
     const token = authHeader.split(' ')[1];
-    return token || null;
+    if (!token) {
+      throw new Error('Token not found in authorization header');
+    }
+    return token;
   },
 );

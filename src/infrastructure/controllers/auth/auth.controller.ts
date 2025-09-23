@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import { GetAccessToken } from './decorators/get-access-token.decorator';
 import {
   ApiTags,
   ApiOperation,
@@ -71,12 +72,8 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Senha atual incorreta' })
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    @Req() req: Request,
+    @GetAccessToken() accessToken: string,
   ) {
-    const accessToken = req.headers.authorization?.replace('Bearer ', '');
-    if (!accessToken) {
-      throw new Error('Access token not found');
-    }
     return await this.authService.changePassword(
       changePasswordDto,
       accessToken,

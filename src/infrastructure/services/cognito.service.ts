@@ -175,7 +175,7 @@ export class CognitoService {
     await this.cognitoClient.send(command);
   }
 
-  async dd0rachangePassword(
+  async changePassword(
     accessToken: string,
     oldPassword: string,
     newPassword: string,

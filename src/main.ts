@@ -6,6 +6,14 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Configuração de CORS
+  app.enableCors({
+    origin: true, // Em produção, especificar domínios permitidos
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+  });
+
   // Configuração do Swagger
   const config = new DocumentBuilder()
     .setTitle('Wishlist Backend API')

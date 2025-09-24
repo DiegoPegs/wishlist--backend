@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from '../../services/app.service';
 import { ConfigValidationService } from '../../services/config-validation.service';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller()
 export class AppController {
@@ -9,11 +10,13 @@ export class AppController {
     private readonly configValidationService: ConfigValidationService,
   ) {}
 
+  @Public()
   @Get()
   getHello(): string {
     return this.appService.getHello();
   }
 
+  @Public()
   @Get('health')
   getHealth() {
     return {
@@ -23,6 +26,7 @@ export class AppController {
     };
   }
 
+  @Public()
   @Get('config-status')
   getConfigStatus() {
     const validation = this.configValidationService.validateEnvironmentVariables();

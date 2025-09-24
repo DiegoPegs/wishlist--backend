@@ -105,7 +105,6 @@ export class MongoUserRepository implements IUserRepository {
     const user = await this.userModel
       .findOne({
         $or: [{ email: login }, { username: login }],
-        status: UserStatus.ACTIVE,
       })
       .exec();
     return user ? this.toDomain(user) : null;

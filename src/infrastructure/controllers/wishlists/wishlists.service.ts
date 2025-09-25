@@ -14,6 +14,7 @@ import { UpdateWishlistSharingUseCase } from '../../../application/use-cases/wis
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
 import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
+import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
 
 @Injectable()
 export class WishlistsService {
@@ -36,7 +37,7 @@ export class WishlistsService {
     return this.createWishlistUseCase.execute(createWishlistDto, _userId);
   }
 
-  async getUserWishlists(_userId: string): Promise<Wishlist[]> {
+  async getUserWishlists(_userId: string): Promise<WishlistWithItemsResponseDto[]> {
     return this.getUserWishlistsUseCase.execute(_userId);
   }
 

@@ -20,6 +20,7 @@ import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
 import { GetUser } from '../users/get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
+import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Wishlists')
@@ -66,14 +67,14 @@ export class WishlistsController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Lista de wishlists obtida com sucesso',
-    type: [Wishlist],
+    description: 'Lista de wishlists com seus itens obtida com sucesso',
+    type: [WishlistWithItemsResponseDto],
   })
   @ApiResponse({
     status: 401,
     description: 'Token JWT inválido ou expirado',
   })
-  async getMyWishlists(@GetUser() user: User): Promise<Wishlist[]> {
+  async getMyWishlists(@GetUser() user: User): Promise<WishlistWithItemsResponseDto[]> {
     if (!user._id) {
       throw new Error('User ID not found');
     }

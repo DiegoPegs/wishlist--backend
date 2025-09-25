@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWishlistDto } from '../../../application/dtos/wishlist/create-wishlist.dto';
 import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
+import { UpdateWishlistSharingDto } from '../../../application/dtos/wishlist/update-wishlist-sharing.dto';
 import { CreateWishlistUseCase } from '../../../application/use-cases/wishlist/create-wishlist.use-case';
 import { GetUserWishlistsUseCase } from '../../../application/use-cases/wishlist/get-user-wishlists.use-case';
 import { GetWishlistByIdUseCase } from '../../../application/use-cases/wishlist/get-wishlist-by-id.use-case';
@@ -9,6 +10,7 @@ import { SoftDeleteWishlistUseCase } from '../../../application/use-cases/wishli
 import { RestoreWishlistUseCase } from '../../../application/use-cases/wishlist/restore-wishlist.use-case';
 import { HardDeleteWishlistUseCase } from '../../../application/use-cases/wishlist/hard-delete-wishlist.use-case';
 import { CreateItemUseCase } from '../../../application/use-cases/item/create-item.use-case';
+import { UpdateWishlistSharingUseCase } from '../../../application/use-cases/wishlist/update-wishlist-sharing.use-case';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
 import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
@@ -24,6 +26,7 @@ export class WishlistsService {
     private readonly restoreWishlistUseCase: RestoreWishlistUseCase,
     private readonly hardDeleteWishlistUseCase: HardDeleteWishlistUseCase,
     private readonly createItemUseCase: CreateItemUseCase,
+    private readonly updateWishlistSharingUseCase: UpdateWishlistSharingUseCase,
   ) {}
 
   async createWishlist(
@@ -78,5 +81,21 @@ export class WishlistsService {
     _userId: string,
   ): Promise<{ message: string }> {
     return this.hardDeleteWishlistUseCase.execute(_wishlistId, _userId);
+  }
+
+  async updateWishlistSharing(
+    wishlistId: string,
+    updateWishlistSharingDto: UpdateWishlistSharingDto,
+    requesterId: string,
+  ): Promise<{
+    isPublic: boolean;
+    publicLinkToken?: string;
+    publicUrl?: string;
+  }> {
+    return this.updateWishlistSharingUseCase.execute(
+      wishlistId,
+      updateWishlistSharingDto,
+      requesterId,
+    );
   }
 }

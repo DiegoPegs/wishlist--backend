@@ -3,20 +3,24 @@ import {
   Post,
   Get,
   Delete,
+  Patch,
   Body,
   Param,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateWishlistDto } from '../../../application/dtos/wishlist/create-wishlist.dto';
 import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
 import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
+import { UpdateWishlistSharingDto } from '../../../application/dtos/wishlist/update-wishlist-sharing.dto';
 import { WishlistsService } from './wishlists.service';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
 import { GetUser } from '../users/get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Wishlists')
 @Controller('wishlists')
@@ -74,6 +78,78 @@ export class WishlistsController {
       throw new Error('User ID not found');
     }
     return await this.wishlistsService.getUserWishlists(user._id.toString());
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/sharing')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Atualizar configuração de compartilhamento da wishlist',
+    description: 'Permite tornar uma wishlist pública ou privada, gerando um link público quando necessário',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Configuração de compartilhamento atualizada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        isPublic: {
+          type: 'boolean',
+          description: 'Status atual do compartilhamento',
+          example: true,
+        },
+        publicLinkToken: {
+          type: 'string',
+          description: 'Token único para acesso público (apenas se isPublic for true)',
+          example: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6',
+        },
+        publicUrl: {
+          type: 'string',
+          description: 'URL pública para acessar a wishlist (apenas se isPublic for true)',
+          example: 'http://localhost:3000/public/wishlists/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos fornecidos',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Wishlist não encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para alterar esta wishlist',
+  })
+  async updateWishlistSharing(
+    @Param('id') wishlistId: string,
+    @Body() updateWishlistSharingDto: UpdateWishlistSharingDto,
+    @GetUser() user: User,
+  ): Promise<{
+    isPublic: boolean;
+    publicLinkToken?: string;
+    publicUrl?: string;
+  }> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.wishlistsService.updateWishlistSharing(
+      wishlistId,
+      updateWishlistSharingDto,
+      user._id.toString(),
+    );
   }
 
   @Get(':id')

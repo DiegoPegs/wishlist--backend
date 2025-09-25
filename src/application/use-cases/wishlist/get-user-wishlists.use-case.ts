@@ -23,18 +23,21 @@ export class GetUserWishlistsUseCase {
       wishlists.map(async (wishlist) => {
         const items = await this.itemRepository.findByWishlistId(wishlist._id.toString());
 
-        // 3. Mapear wishlist para DTO limpo
+        // 3. Converter wishlist para objeto JavaScript puro (POJO)
+        const plainWishlist = this.convertToPlainObject(wishlist);
+
+        // 4. Mapear wishlist para DTO limpo
         const wishlistDto: WishlistWithItemsResponseDto = {
-          _id: wishlist._id.toString(),
-          userId: wishlist.userId.toString(),
-          title: wishlist.title,
-          description: wishlist.description,
+          _id: plainWishlist._id.toString(),
+          userId: plainWishlist.userId.toString(),
+          title: plainWishlist.title,
+          description: plainWishlist.description,
           sharing: {
-            isPublic: wishlist.sharing.isPublic,
-            publicLinkToken: wishlist.sharing.publicLinkToken,
+            isPublic: plainWishlist.sharing.isPublic,
+            publicLinkToken: plainWishlist.sharing.publicLinkToken,
           },
-          status: wishlist.status,
-          archivedAt: wishlist.archivedAt?.toISOString(),
+          status: plainWishlist.status,
+          archivedAt: plainWishlist.archivedAt?.toISOString(),
           items: items.map(item => this.mapItemToDto(item)),
         };
 
@@ -45,10 +48,51 @@ export class GetUserWishlistsUseCase {
     return wishlistsWithItems;
   }
 
-  private mapItemToDto(item: Item) {
+  private convertToPlainObject(wishlist: Wishlist): any {
+    // Converter para objeto JavaScript puro, removendo qualquer referência ao Mongoose
     return {
-      _id: item._id.toString(),
-      wishlistId: item.wishlistId.toString(),
+      _id: wishlist._id,
+      userId: wishlist.userId,
+      title: wishlist.title,
+      description: wishlist.description,
+      sharing: {
+        isPublic: wishlist.sharing.isPublic,
+        publicLinkToken: wishlist.sharing.publicLinkToken,
+      },
+      status: wishlist.status,
+      archivedAt: wishlist.archivedAt,
+    };
+  }
+
+  private mapItemToDto(item: Item) {
+    // Converter item para objeto JavaScript puro
+    const plainItem = this.convertItemToPlainObject(item);
+
+    return {
+      _id: plainItem._id.toString(),
+      wishlistId: plainItem.wishlistId.toString(),
+      title: plainItem.title,
+      itemType: plainItem.itemType,
+      quantity: plainItem.quantity ? {
+        desired: plainItem.quantity.desired,
+        reserved: plainItem.quantity.reserved,
+        received: plainItem.quantity.received,
+      } : undefined,
+      link: plainItem.link,
+      imageUrl: plainItem.imageUrl,
+      price: plainItem.price ? {
+        min: plainItem.price.min,
+        max: plainItem.price.max,
+      } : undefined,
+      notes: plainItem.notes,
+    };
+  }
+
+  private convertItemToPlainObject(item: Item): any {
+    // Converter para objeto JavaScript puro, removendo qualquer referência ao Mongoose
+    return {
+      _id: item._id,
+      wishlistId: item.wishlistId,
       title: item.title,
       itemType: item.itemType,
       quantity: item.quantity ? {

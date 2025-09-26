@@ -19,14 +19,15 @@ export class MongoInvitationRepository implements IInvitationRepository {
   async create(invitation: Invitation): Promise<Invitation> {
     const createdInvitation = new this.invitationModel(invitation);
     const savedInvitation = await createdInvitation.save();
-    return this.toDomain(savedInvitation);
+    return this.toDomain(savedInvitation.toObject());
   }
 
   async findByToken(_token: string): Promise<Invitation | null> {
     const invitation = await this.invitationModel
       .findOne({ token: _token })
+      .lean()
       .exec();
-    return invitation ? this.toDomain(invitation) : null;
+    return invitation ? this.toDomain(invitation as any) : null;
   }
 
   async update(
@@ -35,8 +36,9 @@ export class MongoInvitationRepository implements IInvitationRepository {
   ): Promise<Invitation | null> {
     const updatedInvitation = await this.invitationModel
       .findByIdAndUpdate(_id, data, { new: true })
+      .lean()
       .exec();
-    return updatedInvitation ? this.toDomain(updatedInvitation) : null;
+    return updatedInvitation ? this.toDomain(updatedInvitation as any) : null;
   }
 
   private toDomain(invitationDocument: InvitationDocument): Invitation {

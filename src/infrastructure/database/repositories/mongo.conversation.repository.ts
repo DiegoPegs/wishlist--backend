@@ -19,12 +19,12 @@ export class MongoConversationRepository implements IConversationRepository {
   async create(conversation: Conversation): Promise<Conversation> {
     const createdConversation = new this.conversationModel(conversation);
     const savedConversation = await createdConversation.save();
-    return this.toDomain(savedConversation);
+    return this.toDomain(savedConversation.toObject());
   }
 
   async findById(_id: string): Promise<Conversation | null> {
-    const conversation = await this.conversationModel.findById(_id).exec();
-    return conversation ? this.toDomain(conversation) : null;
+    const conversation = await this.conversationModel.findById(_id).lean().exec();
+    return conversation ? this.toDomain(conversation as any) : null;
   }
 
   async findByItemIdAndParticipants(
@@ -36,22 +36,25 @@ export class MongoConversationRepository implements IConversationRepository {
         itemId: itemId,
         participants: { $all: _participants },
       })
+      .lean()
       .exec();
-    return conversation ? this.toDomain(conversation) : null;
+    return conversation ? this.toDomain(conversation as any) : null;
   }
 
   async findByItemId(itemId: string): Promise<Conversation[]> {
     const conversations = await this.conversationModel
       .find({ itemId: itemId })
+      .lean()
       .exec();
-    return conversations.map((conversation) => this.toDomain(conversation));
+    return conversations.map((conversation) => this.toDomain(conversation as any));
   }
 
   async findByUserId(_userId: string): Promise<Conversation[]> {
     const conversations = await this.conversationModel
       .find({ participants: _userId })
+      .lean()
       .exec();
-    return conversations.map((conversation) => this.toDomain(conversation));
+    return conversations.map((conversation) => this.toDomain(conversation as any));
   }
 
   async delete(_id: string): Promise<boolean> {

@@ -26,7 +26,7 @@ export class MongoMessageRepository implements IMessageRepository {
     try {
       const createdMessage = new this.messageModel(message);
       const savedMessage = await createdMessage.save();
-      return this.toDomain(savedMessage);
+      return this.toDomain(savedMessage.toObject());
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -40,8 +40,9 @@ export class MongoMessageRepository implements IMessageRepository {
       const messages = await this.messageModel
         .find({ conversationId: _conversationId })
         .sort({ timestamp: 1 })
+        .lean()
         .exec();
-      return messages.map((message) => this.toDomain(message));
+      return messages.map((message) => this.toDomain(message as any));
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -73,6 +74,7 @@ export class MongoMessageRepository implements IMessageRepository {
       // Primeiro, buscar todas as conversas relacionadas ao item
       const conversations = await this.conversationModel
         .find({ itemId: itemId })
+        .lean()
         .exec();
       const conversationIds = conversations.map((conv) =>
         safeToString(conv._id),

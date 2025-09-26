@@ -16,24 +16,25 @@ export class MongoItemRepository implements IItemRepository {
   async create(item: Item): Promise<Item> {
     const createdItem = new this.itemModel(item);
     const savedItem = await createdItem.save();
-    return this.toDomain(savedItem);
+    return this.toDomain(savedItem.toObject());
   }
 
   async findById(_id: string): Promise<Item | null> {
-    const item = await this.itemModel.findById(_id).exec();
-    return item ? this.toDomain(item) : null;
+    const item = await this.itemModel.findById(_id).lean().exec();
+    return item ? this.toDomain(item as any) : null;
   }
 
   async findByWishlistId(_wishlistId: string): Promise<Item[]> {
-    const items = await this.itemModel.find({ wishlistId: _wishlistId }).exec();
-    return items.map((item) => this.toDomain(item));
+    const items = await this.itemModel.find({ wishlistId: _wishlistId }).lean().exec();
+    return items.map((item) => this.toDomain(item as any));
   }
 
   async update(_id: string, data: Partial<Item>): Promise<Item | null> {
     const updatedItem = await this.itemModel
       .findByIdAndUpdate(_id, data, { new: true })
+      .lean()
       .exec();
-    return updatedItem ? this.toDomain(updatedItem) : null;
+    return updatedItem ? this.toDomain(updatedItem as any) : null;
   }
 
   async incrementReservedQuantity(_id: string, quantity: number): Promise<Item | null> {
@@ -43,8 +44,9 @@ export class MongoItemRepository implements IItemRepository {
         { $inc: { 'quantity.reserved': quantity } },
         { new: true }
       )
+      .lean()
       .exec();
-    return updatedItem ? this.toDomain(updatedItem) : null;
+    return updatedItem ? this.toDomain(updatedItem as any) : null;
   }
 
   async incrementReceivedQuantity(_id: string, quantity: number): Promise<Item | null> {
@@ -54,8 +56,9 @@ export class MongoItemRepository implements IItemRepository {
         { $inc: { 'quantity.received': quantity } },
         { new: true }
       )
+      .lean()
       .exec();
-    return updatedItem ? this.toDomain(updatedItem) : null;
+    return updatedItem ? this.toDomain(updatedItem as any) : null;
   }
 
   async delete(_id: string): Promise<boolean> {

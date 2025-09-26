@@ -48,7 +48,7 @@ export class MongoUserRepository implements IUserRepository {
 
     const createdUser = new this.userModel(userData);
     const savedUser = await createdUser.save();
-    return this.toDomain(savedUser);
+    return this.toDomain(savedUser.toObject());
   }
 
   async findById(_id: string): Promise<User | null> {
@@ -57,13 +57,14 @@ export class MongoUserRepository implements IUserRepository {
         _id: _id,
         status: UserStatus.ACTIVE,
       })
+      .lean()
       .exec();
-    return user ? this.toDomain(user) : null;
+    return user ? this.toDomain(user as any) : null;
   }
 
   async findByIdIncludingInactive(_id: string): Promise<User | null> {
-    const user = await this.userModel.findById(_id).exec();
-    return user ? this.toDomain(user) : null;
+    const user = await this.userModel.findById(_id).lean().exec();
+    return user ? this.toDomain(user as any) : null;
   }
 
   async findByEmail(_email: string): Promise<User | null> {
@@ -72,8 +73,9 @@ export class MongoUserRepository implements IUserRepository {
         email: _email,
         status: UserStatus.ACTIVE,
       })
+      .lean()
       .exec();
-    return user ? this.toDomain(user) : null;
+    return user ? this.toDomain(user as any) : null;
   }
 
   async findByUsername(_username: string): Promise<User | null> {
@@ -82,23 +84,28 @@ export class MongoUserRepository implements IUserRepository {
         username: _username,
         status: UserStatus.ACTIVE,
       })
+      .lean()
       .exec();
-    return user ? this.toDomain(user) : null;
+    return user ? this.toDomain(user as any) : null;
   }
 
   // Métodos específicos para autenticação (incluem usuários inativos)
   async findByEmailForAuth(_email: string): Promise<User | null> {
     const user = await this.userModel
       .findOne({ email: _email })
-      .select('+password');
-    return user ? this.toDomain(user) : null;
+      .select('+password')
+      .lean()
+      .exec();
+    return user ? this.toDomain(user as any) : null;
   }
 
   async findByUsernameForAuth(_username: string): Promise<User | null> {
     const user = await this.userModel
       .findOne({ username: _username })
-      .select('+password');
-    return user ? this.toDomain(user) : null;
+      .select('+password')
+      .lean()
+      .exec();
+    return user ? this.toDomain(user as any) : null;
   }
 
   async findByLogin(login: string): Promise<User | null> {
@@ -106,8 +113,9 @@ export class MongoUserRepository implements IUserRepository {
       .findOne({
         $or: [{ email: login }, { username: login }],
       })
+      .lean()
       .exec();
-    return user ? this.toDomain(user) : null;
+    return user ? this.toDomain(user as any) : null;
   }
 
   async findByLoginWithPassword(login: string): Promise<User | null> {
@@ -117,8 +125,9 @@ export class MongoUserRepository implements IUserRepository {
         status: UserStatus.ACTIVE,
       })
       .select('+password')
+      .lean()
       .exec();
-    return user ? this.toDomain(user) : null;
+    return user ? this.toDomain(user as any) : null;
   }
 
   async findByIds(_ids: string[]): Promise<User[]> {
@@ -127,8 +136,9 @@ export class MongoUserRepository implements IUserRepository {
         _id: { $in: _ids },
         status: UserStatus.ACTIVE,
       })
+      .lean()
       .exec();
-    return users.map((user) => this.toDomain(user));
+    return users.map((user) => this.toDomain(user as any));
   }
 
   // Método para buscar dependentes incluindo inativos
@@ -137,8 +147,9 @@ export class MongoUserRepository implements IUserRepository {
       .find({
         _id: { $in: _ids },
       })
+      .lean()
       .exec();
-    return users.map((user) => this.toDomain(user));
+    return users.map((user) => this.toDomain(user as any));
   }
 
   async update(_id: string, data: Partial<User>): Promise<User | null> {
@@ -159,8 +170,9 @@ export class MongoUserRepository implements IUserRepository {
 
     const updatedUser = await this.userModel
       .findByIdAndUpdate(_id, { $set: updateData }, { new: true })
+      .lean()
       .exec();
-    return updatedUser ? this.toDomain(updatedUser) : null;
+    return updatedUser ? this.toDomain(updatedUser as any) : null;
   }
 
   async delete(_id: string): Promise<boolean> {

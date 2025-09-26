@@ -20,7 +20,7 @@ export class MongoReservationRepository implements IReservationRepository {
     try {
       const createdReservation = new this.reservationModel(reservation);
       const savedReservation = await createdReservation.save();
-      return this.toDomain(savedReservation);
+      return this.toDomain(savedReservation.toObject());
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -31,8 +31,8 @@ export class MongoReservationRepository implements IReservationRepository {
 
   async findById(_id: string): Promise<Reservation | null> {
     try {
-      const reservation = await this.reservationModel.findById(_id).exec();
-      return reservation ? this.toDomain(reservation) : null;
+      const reservation = await this.reservationModel.findById(_id).lean().exec();
+      return reservation ? this.toDomain(reservation as any) : null;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -47,8 +47,9 @@ export class MongoReservationRepository implements IReservationRepository {
     try {
       const reservations = await this.reservationModel
         .find({ itemId: itemId })
+        .lean()
         .exec();
-      return reservations.map((reservation) => this.toDomain(reservation));
+      return reservations.map((reservation) => this.toDomain(reservation as any));
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -63,8 +64,9 @@ export class MongoReservationRepository implements IReservationRepository {
     try {
       const reservations = await this.reservationModel
         .find({ reservedByUserId: _userId })
+        .lean()
         .exec();
-      return reservations.map((reservation) => this.toDomain(reservation));
+      return reservations.map((reservation) => this.toDomain(reservation as any));
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -82,8 +84,9 @@ export class MongoReservationRepository implements IReservationRepository {
     try {
       const updatedReservation = await this.reservationModel
         .findByIdAndUpdate(_id, data, { new: true })
+        .lean()
         .exec();
-      return updatedReservation ? this.toDomain(updatedReservation) : null;
+      return updatedReservation ? this.toDomain(updatedReservation as any) : null;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;

@@ -129,6 +129,17 @@ export class CognitoService {
     return response;
   }
 
+  // Obter atributos do usuário usando accessToken
+  async getUserAttributes(accessToken: string): Promise<any> {
+    const command = new AdminGetUserCommand({
+      UserPoolId: this.userPoolId,
+      Username: accessToken, // Em produção, extrair username do token
+    });
+
+    const response = await this.cognitoClient.send(command);
+    return response;
+  }
+
   // Criar usuário (admin)
   async createUser(
     username: string,

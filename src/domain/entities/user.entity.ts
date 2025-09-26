@@ -6,6 +6,7 @@ import {
   IsEmail,
   IsEnum,
   IsMongoId,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
@@ -13,16 +14,45 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserStatus } from '../enums/statuses.enum';
 
+export class BirthDate {
+  @ApiProperty({
+    description: 'Dia do nascimento',
+    example: 15,
+    minimum: 1,
+    maximum: 31,
+  })
+  @IsNumber()
+  day: number;
+
+  @ApiProperty({
+    description: 'Mês do nascimento',
+    example: 5,
+    minimum: 1,
+    maximum: 12,
+  })
+  @IsNumber()
+  month: number;
+
+  @ApiPropertyOptional({
+    description: 'Ano do nascimento',
+    example: 1990,
+    minimum: 1900,
+    maximum: 2100,
+  })
+  @IsOptional()
+  @IsNumber()
+  year?: number;
+}
+
 export class GiftingProfile {
   @ApiPropertyOptional({
     description: 'Data de nascimento para referência de presentes',
-    example: '1990-05-15',
-    type: 'string',
-    format: 'date',
+    type: BirthDate,
   })
   @IsOptional()
-  @IsDateString()
-  birthDate?: string;
+  @ValidateNested()
+  @Type(() => BirthDate)
+  birthDate?: BirthDate;
 
   @ApiPropertyOptional({
     description: 'Tamanho de camisa',
@@ -133,13 +163,12 @@ export class User {
 
   @ApiPropertyOptional({
     description: 'Data de nascimento do usuário',
-    example: '1990-05-15',
-    type: 'string',
-    format: 'date',
+    type: BirthDate,
   })
   @IsOptional()
-  @IsDateString()
-  birthDate?: string;
+  @ValidateNested()
+  @Type(() => BirthDate)
+  birthDate?: BirthDate;
 
   @ApiProperty({
     description: 'Indica se o usuário é um dependente',
@@ -148,6 +177,15 @@ export class User {
   })
   @IsBoolean()
   isDependent: boolean;
+
+  @ApiProperty({
+    description: 'Indica se o e-mail do usuário foi verificado',
+    example: false,
+    type: 'boolean',
+    default: false,
+  })
+  @IsBoolean()
+  isEmailVerified: boolean;
 
   @ApiProperty({
     description: 'Status do usuário',

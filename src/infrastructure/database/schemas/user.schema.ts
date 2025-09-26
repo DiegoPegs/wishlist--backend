@@ -24,11 +24,26 @@ export class User {
   @Prop({ required: false })
   name?: string;
 
-  @Prop({ required: false })
-  birthDate?: string;
+  @Prop({
+    type: {
+      day: { type: Number, required: true },
+      month: { type: Number, required: true },
+      year: { type: Number, required: false },
+    },
+    required: false,
+    _id: false,
+  })
+  birthDate?: {
+    day: number;
+    month: number;
+    year?: number;
+  };
 
   @Prop({ required: true, default: false })
   isDependent: boolean;
+
+  @Prop({ required: true, default: false })
+  isEmailVerified: boolean;
 
   @Prop({
     type: String,
@@ -64,7 +79,15 @@ export class User {
 
   @Prop({
     type: {
-      birthDate: { type: String, required: false },
+      birthDate: {
+        type: {
+          day: { type: Number, required: true },
+          month: { type: Number, required: true },
+          year: { type: Number, required: false },
+        },
+        required: false,
+        _id: false,
+      },
       shirtSize: { type: String, required: false },
       pantsSize: { type: String, required: false },
       shoeSize: { type: String, required: false },
@@ -75,7 +98,11 @@ export class User {
     _id: false,
   })
   giftingProfile?: {
-    birthDate?: string;
+    birthDate?: {
+      day: number;
+      month: number;
+      year?: number;
+    };
     shirtSize?: string;
     pantsSize?: string;
     shoeSize?: string;

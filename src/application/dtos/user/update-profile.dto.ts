@@ -1,31 +1,27 @@
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsNumber,
-  ValidateNested,
-} from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, IsNotEmpty, MinLength, MaxLength, IsNumber, ValidateNested } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class BirthDateDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Dia do nascimento',
     example: 15,
     minimum: 1,
     maximum: 31,
   })
+  @IsOptional()
   @IsNumber()
-  day: number;
+  day?: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Mês do nascimento',
     example: 5,
     minimum: 1,
     maximum: 12,
   })
+  @IsOptional()
   @IsNumber()
-  month: number;
+  month?: number;
 
   @ApiPropertyOptional({
     description: 'Ano do nascimento',
@@ -38,33 +34,28 @@ export class BirthDateDto {
   year?: number;
 }
 
-export class CreateDependentDto {
-  @ApiProperty({
-    description: 'Nome completo do dependente',
-    example: 'João Silva',
+export class UpdateProfileDto {
+  @ApiPropertyOptional({
+    description: 'Nome completo do usuário',
+    example: 'João Silva Santos',
+    type: 'string',
     minLength: 2,
     maxLength: 100,
   })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  name: string;
+  @MinLength(2)
+  @MaxLength(100)
+  name?: string;
 
   @ApiPropertyOptional({
-    description: 'Data de nascimento do dependente',
+    description: 'Data de nascimento do usuário',
     type: BirthDateDto,
   })
   @IsOptional()
   @ValidateNested()
   @Type(() => BirthDateDto)
   birthDate?: BirthDateDto;
-
-  @ApiPropertyOptional({
-    description: 'Nome de usuário do dependente',
-    example: 'antony.freire',
-    minLength: 3,
-    maxLength: 30,
-  })
-  @IsOptional()
-  @IsString()
-  username?: string;
 }
+

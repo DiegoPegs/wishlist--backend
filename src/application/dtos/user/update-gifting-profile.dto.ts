@@ -1,16 +1,48 @@
-import { IsDateString, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, IsNumber, ValidateNested } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+
+export class GiftingBirthDateDto {
+  @ApiPropertyOptional({
+    description: 'Dia do nascimento',
+    example: 15,
+    minimum: 1,
+    maximum: 31,
+  })
+  @IsOptional()
+  @IsNumber()
+  day?: number;
+
+  @ApiPropertyOptional({
+    description: 'Mês do nascimento',
+    example: 5,
+    minimum: 1,
+    maximum: 12,
+  })
+  @IsOptional()
+  @IsNumber()
+  month?: number;
+
+  @ApiPropertyOptional({
+    description: 'Ano do nascimento',
+    example: 1990,
+    minimum: 1900,
+    maximum: 2100,
+  })
+  @IsOptional()
+  @IsNumber()
+  year?: number;
+}
 
 export class UpdateGiftingProfileDto {
   @ApiPropertyOptional({
     description: 'Data de nascimento para referência de presentes',
-    example: '1990-05-15',
-    type: 'string',
-    format: 'date',
+    type: GiftingBirthDateDto,
   })
   @IsOptional()
-  @IsDateString()
-  birthDate?: string;
+  @ValidateNested()
+  @Type(() => GiftingBirthDateDto)
+  birthDate?: GiftingBirthDateDto;
 
   @ApiPropertyOptional({
     description: 'Tamanho de camisa',

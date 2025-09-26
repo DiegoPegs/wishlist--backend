@@ -29,6 +29,7 @@ import {
   ApiConflictResponse,
 } from '@nestjs/swagger';
 import { UpdateGiftingProfileDto } from '../../../application/dtos/user/update-gifting-profile.dto';
+import { UpdateProfileDto } from '../../../application/dtos/user/update-profile.dto';
 import { CreateDependentDto } from '../../../application/dtos/user/create-dependent.dto';
 import { AddGuardianDto } from '../../../application/dtos/user/add-guardian.dto';
 import { CreateDependentWishlistDto } from '../../../application/dtos/wishlist/create-dependent-wishlist.dto';
@@ -63,6 +64,42 @@ export class UsersController {
     }
 
     return await this.usersService.getCurrentUser(req.user._id.toString());
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('me')
+  @ApiOperation({
+    summary: 'Atualizar perfil do usuário',
+    description: 'Atualiza as informações básicas do perfil do usuário autenticado',
+  })
+  @ApiBody({
+    type: UpdateProfileDto,
+    description: 'Dados do perfil para atualização',
+  })
+  @ApiOkResponse({
+    description: 'Perfil atualizado com sucesso',
+    type: User,
+  })
+  @ApiBadRequestResponse({
+    description: 'Dados inválidos fornecidos',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Usuário não encontrado',
+  })
+  async updateProfile(
+    @GetUser() user: User,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ): Promise<User> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.updateProfile(
+      user._id.toString(),
+      updateProfileDto,
+    );
   }
 
   @Put('me/gifting-profile')

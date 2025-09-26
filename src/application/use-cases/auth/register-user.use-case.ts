@@ -49,6 +49,7 @@ export class RegisterUserUseCase {
 
       // 2. Criar usuário no nosso banco (sem senha, pois está no Cognito)
       const user = new User();
+      user.name = dto.name; // Salvar o nome completo do usuário
       user.username = dto.username;
       user.email = dto.email;
       user.cognitoUserId = cognitoResult.userId; // Armazenar ID do Cognito

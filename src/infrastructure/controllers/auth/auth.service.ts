@@ -81,7 +81,25 @@ export class AuthService {
         cognitoResult = await this.localAuthFallback(cognitoUsername, loginDto.password);
       }
 
-    // 5. Gerar JWT token
+    // 5. Buscar atributos do usuário no Cognito para sincronizar isEmailVerified
+    try {
+      const cognitoUser = await this.cognitoService.getUserAttributes(cognitoResult.accessToken);
+      if (cognitoUser.UserAttributes) {
+        const emailVerifiedAttr = cognitoUser.UserAttributes.find(
+          (attr: any) => attr.Name === 'email_verified'
+        );
+        if (emailVerifiedAttr) {
+          user.isEmailVerified = emailVerifiedAttr.Value === 'true';
+          // Atualizar o usuário no banco de dados
+          await this.userRepository.update(user._id!, { isEmailVerified: user.isEmailVerified });
+        }
+      }
+    } catch (cognitoError: any) {
+      // Se falhar ao buscar atributos, manter o valor atual
+      console.warn('Falha ao sincronizar status de verificação de e-mail:', cognitoError.message);
+    }
+
+    // 6. Gerar JWT token
     const accessToken = this.generateAccessToken(user);
 
     // Remover campos sensíveis

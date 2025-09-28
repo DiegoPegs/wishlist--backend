@@ -12,6 +12,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
 import {
   ApiTags,
   ApiOperation,
@@ -239,7 +240,7 @@ export class UsersController {
       'Usuário não tem permissão para criar listas para este dependente',
   })
   async createDependentWishlist(
-    @Param('dependentId') dependentId: string,
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
     @GetUser() user: User,
     @Body() createDependentWishlistDto: CreateDependentWishlistDto,
   ): Promise<Wishlist> {
@@ -296,7 +297,7 @@ export class UsersController {
       'Usuário não tem permissão para adicionar guardiões ou não segue o novo guardião',
   })
   async addGuardian(
-    @Param('id') dependentId: string,
+    @Param('id', ParseMongoIdPipe) dependentId: string,
     @GetUser() user: User,
     @Body() addGuardianDto: AddGuardianDto,
   ): Promise<{ message: string }> {
@@ -337,7 +338,7 @@ export class UsersController {
     description: 'Usuário não tem permissão para desativar este dependente',
   })
   async deactivateDependent(
-    @Param('id') dependentId: string,
+    @Param('id', ParseMongoIdPipe) dependentId: string,
     @GetUser() user: User,
   ): Promise<void> {
     if (!user._id) {
@@ -384,7 +385,7 @@ export class UsersController {
     description: 'Usuário não tem permissão para restaurar este dependente',
   })
   async restoreDependent(
-    @Param('id') dependentId: string,
+    @Param('id', ParseMongoIdPipe) dependentId: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
     if (!user._id) {
@@ -424,7 +425,7 @@ export class UsersController {
       'Usuário não tem permissão para excluir permanentemente este dependente',
   })
   async permanentlyDeleteDependent(
-    @Param('id') dependentId: string,
+    @Param('id', ParseMongoIdPipe) dependentId: string,
     @GetUser() user: User,
   ): Promise<void> {
     if (!user._id) {
@@ -597,7 +598,7 @@ export class UsersController {
       'Não é possível remover o último guardião ou usuário não é guardião deste dependente',
   })
   async removeGuardianship(
-    @Param('dependentId') dependentId: string,
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
     @GetUser() user: User,
   ): Promise<void> {
     if (!user._id) {

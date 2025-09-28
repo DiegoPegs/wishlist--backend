@@ -1,7 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-export type ItemDocument = Item & Document;
+export type ItemDocument = Item & Document & {
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export enum ItemType {
   SPECIFIC_PRODUCT = 'SPECIFIC_PRODUCT',
@@ -15,6 +18,9 @@ export class Item {
 
   @Prop({ required: true })
   title: string;
+
+  @Prop({ required: false })
+  description?: string;
 
   @Prop({ enum: ItemType, required: true })
   itemType: ItemType;

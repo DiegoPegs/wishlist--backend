@@ -11,6 +11,7 @@ import { RestoreWishlistUseCase } from '../../../application/use-cases/wishlist/
 import { HardDeleteWishlistUseCase } from '../../../application/use-cases/wishlist/hard-delete-wishlist.use-case';
 import { PurgeArchivedWishlistsUseCase } from '../../../application/use-cases/wishlist/purge-archived-wishlists.use-case';
 import { UpdateWishlistSharingUseCase } from '../../../application/use-cases/wishlist/update-wishlist-sharing.use-case';
+import { UpdateWishlistUseCase } from '../../../application/use-cases/wishlist/update-wishlist.use-case';
 import { CreateItemUseCase } from '../../../application/use-cases/item/create-item.use-case';
 import { MongoWishlistRepository } from '../../database/repositories/mongo.wishlist.repository';
 import { MongoItemRepository } from '../../database/repositories/mongo.item.repository';
@@ -54,6 +55,7 @@ import { Message, MessageSchema } from '../../database/schemas/message.schema';
     HardDeleteWishlistUseCase,
     PurgeArchivedWishlistsUseCase,
     UpdateWishlistSharingUseCase,
+    UpdateWishlistUseCase,
     CreateItemUseCase,
     {
       provide: 'IWishlistRepository',

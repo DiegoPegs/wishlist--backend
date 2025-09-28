@@ -1,40 +1,12 @@
 import { Type } from 'class-transformer';
 import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   IsUrl,
   ValidateNested,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { ItemType } from '../../../domain/entities/item.entity';
-
-export class UpdatePriceRangeDto {
-  @ApiPropertyOptional({
-    description: 'Preço mínimo do item',
-    example: 29.99,
-    type: 'number',
-    minimum: 0,
-  })
-  @IsOptional()
-  @IsNumber()
-  @IsPositive()
-  min?: number;
-
-  @ApiPropertyOptional({
-    description: 'Preço máximo do item',
-    example: 49.99,
-    type: 'number',
-    minimum: 0,
-  })
-  @IsOptional()
-  @IsNumber()
-  @IsPositive()
-  max?: number;
-}
+import { PriceRangeDto } from './price-range.dto';
 
 export class UpdateItemMetadataDto {
   @ApiPropertyOptional({
@@ -46,17 +18,17 @@ export class UpdateItemMetadataDto {
   })
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   title?: string;
 
   @ApiPropertyOptional({
-    description: 'Tipo do item',
-    example: ItemType.SPECIFIC_PRODUCT,
-    enum: ItemType,
+    description: 'Descrição do item',
+    example: 'Livro sobre boas práticas de programação',
+    type: 'string',
+    maxLength: 1000,
   })
   @IsOptional()
-  @IsEnum(ItemType)
-  itemType?: ItemType;
+  @IsString()
+  description?: string;
 
   @ApiPropertyOptional({
     description: 'Link para o produto',
@@ -77,15 +49,6 @@ export class UpdateItemMetadataDto {
   imageUrl?: string;
 
   @ApiPropertyOptional({
-    description: 'Faixa de preço do item',
-    type: UpdatePriceRangeDto,
-  })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => UpdatePriceRangeDto)
-  price?: UpdatePriceRangeDto;
-
-  @ApiPropertyOptional({
     description: 'Notas adicionais sobre o item',
     example: 'Preferir cor azul, tamanho M',
     type: 'string',
@@ -94,4 +57,13 @@ export class UpdateItemMetadataDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({
+    description: 'Faixa de preço do item',
+    type: PriceRangeDto,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PriceRangeDto)
+  price?: PriceRangeDto;
 }

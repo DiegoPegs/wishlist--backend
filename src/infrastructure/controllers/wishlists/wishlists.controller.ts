@@ -4,17 +4,20 @@ import {
   Get,
   Delete,
   Patch,
+  Put,
   Body,
   Param,
   HttpCode,
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
+import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateWishlistDto } from '../../../application/dtos/wishlist/create-wishlist.dto';
 import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
 import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
 import { UpdateWishlistSharingDto } from '../../../application/dtos/wishlist/update-wishlist-sharing.dto';
+import { UpdateWishlistDto } from '../../../application/dtos/wishlist/update-wishlist.dto';
 import { WishlistsService } from './wishlists.service';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
@@ -56,6 +59,53 @@ export class WishlistsController {
     }
     return await this.wishlistsService.createWishlist(
       createWishlistDto,
+      user._id.toString(),
+    );
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Atualizar wishlist',
+    description: 'Atualiza o título e/ou descrição de uma wishlist do usuário autenticado',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Wishlist atualizada com sucesso',
+    type: Wishlist,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos fornecidos',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Wishlist não encontrada',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para atualizar esta wishlist',
+  })
+  async updateWishlist(
+    @Param('id', ParseMongoIdPipe) wishlistId: string,
+    @Body() updateWishlistDto: UpdateWishlistDto,
+    @GetUser() user: User,
+  ): Promise<Wishlist> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.wishlistsService.updateWishlist(
+      wishlistId,
+      updateWishlistDto,
       user._id.toString(),
     );
   }
@@ -135,7 +185,7 @@ export class WishlistsController {
     description: 'Usuário não tem permissão para alterar esta wishlist',
   })
   async updateWishlistSharing(
-    @Param('id') wishlistId: string,
+    @Param('id', ParseMongoIdPipe) wishlistId: string,
     @Body() updateWishlistSharingDto: UpdateWishlistSharingDto,
     @GetUser() user: User,
   ): Promise<{
@@ -175,7 +225,7 @@ export class WishlistsController {
     description: 'Wishlist não encontrada',
   })
   async getWishlistById(
-    @Param('id') id: string,
+    @Param('id', ParseMongoIdPipe) id: string,
     @GetUser() user: User,
   ): Promise<WishlistWithItemsDto> {
     if (!user._id) {
@@ -222,7 +272,7 @@ export class WishlistsController {
     description: 'Usuário não tem permissão para arquivar esta wishlist',
   })
   async archiveWishlist(
-    @Param('id') id: string,
+    @Param('id', ParseMongoIdPipe) id: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
     if (!user._id) {
@@ -265,7 +315,7 @@ export class WishlistsController {
     description: 'Usuário não tem permissão para restaurar esta wishlist',
   })
   async restoreWishlist(
-    @Param('id') id: string,
+    @Param('id', ParseMongoIdPipe) id: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
     if (!user._id) {
@@ -309,7 +359,7 @@ export class WishlistsController {
     description: 'Usuário não tem permissão para excluir esta wishlist',
   })
   async permanentlyDeleteWishlist(
-    @Param('id') id: string,
+    @Param('id', ParseMongoIdPipe) id: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
     if (!user._id) {
@@ -354,7 +404,7 @@ export class WishlistsController {
     description: 'Usuário não tem permissão para adicionar itens a esta wishlist',
   })
   async createItem(
-    @Param('id') wishlistId: string,
+    @Param('id', ParseMongoIdPipe) wishlistId: string,
     @Body() createItemDto: CreateItemDto,
     @GetUser() user: User,
   ): Promise<Item> {

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
-import { Item } from '../../../domain/entities/item.entity';
+import { Item, Quantity } from '../../../domain/entities/item.entity';
 import type { IItemRepository } from '../../../domain/repositories/item.repository.interface';
 import type { IWishlistRepository } from '../../../domain/repositories/wishlist.repository.interface';
 
@@ -31,8 +31,18 @@ export class CreateItemUseCase {
     const item = new Item();
     item.wishlistId = wishlistId;
     item.title = createItemDto.title;
+    item.description = createItemDto.description;
     item.itemType = createItemDto.itemType;
-    item.quantity = createItemDto.quantity;
+
+    // Converter QuantityDto para Quantity se fornecido
+    if (createItemDto.quantity) {
+      item.quantity = {
+        desired: createItemDto.quantity.desired,
+        reserved: 0, // Valor padrão
+        received: 0, // Valor padrão
+      } as Quantity;
+    }
+
     item.link = createItemDto.link;
     item.imageUrl = createItemDto.imageUrl;
     item.price = createItemDto.price;

@@ -10,6 +10,7 @@ import {
   HttpStatus,
   BadRequestException,
 } from '@nestjs/common';
+import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
 import {
   ApiTags,
   ApiOperation,
@@ -73,7 +74,7 @@ export class ReservationsController {
     description: 'Usuário não tem permissão para ver esta reserva',
   })
   async getReservation(
-    @Param('id') reservationId: string,
+    @Param('id', ParseMongoIdPipe) reservationId: string,
     @GetUser() user: User,
   ): Promise<Reservation> {
     if (!user._id) {
@@ -114,17 +115,12 @@ export class ReservationsController {
     description: 'Reserva não encontrada',
   })
   async updateReservationQuantity(
-    @Param('id') reservationId: string,
+    @Param('id', ParseMongoIdPipe) reservationId: string,
     @GetUser() user: User,
     @Body() updateReservationQuantityDto: UpdateReservationQuantityDto,
   ): Promise<Reservation> {
     if (!user._id) {
       throw new Error('User ID not found');
-    }
-
-    // Validar se o ID é um ObjectId válido
-    if (!/^[0-9a-fA-F]{24}$/.test(reservationId)) {
-      throw new BadRequestException('Invalid reservation ID format');
     }
 
     return await this.reservationsService.updateReservationQuantity(
@@ -191,7 +187,7 @@ export class ReservationsController {
     description: 'Usuário não tem permissão para confirmar esta reserva',
   })
   async confirmPurchase(
-    @Param('id') reservationId: string,
+    @Param('id', ParseMongoIdPipe) reservationId: string,
     @GetUser() user: User,
   ): Promise<Reservation> {
     if (!user._id) {
@@ -228,7 +224,7 @@ export class ReservationsController {
     description: 'Usuário não tem permissão para cancelar esta reserva',
   })
   async cancelReservation(
-    @Param('id') reservationId: string,
+    @Param('id', ParseMongoIdPipe) reservationId: string,
     @GetUser() user: User,
   ): Promise<Reservation> {
     if (!user._id) {

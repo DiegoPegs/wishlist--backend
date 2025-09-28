@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsDate,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
@@ -10,6 +11,7 @@ import {
   IsUrl,
   ValidateNested,
 } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum ItemType {
   SPECIFIC_PRODUCT = 'SPECIFIC_PRODUCT',
@@ -50,6 +52,10 @@ export class Item {
   @IsNotEmpty()
   title: string;
 
+  @IsOptional()
+  @IsString()
+  description?: string;
+
   @IsEnum(ItemType)
   itemType: ItemType;
 
@@ -74,4 +80,14 @@ export class Item {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({
+    description: 'Data de criação do item',
+    example: '2024-01-15T10:30:00.000Z',
+    type: 'string',
+    format: 'date-time',
+  })
+  @IsOptional()
+  @IsDate()
+  createdAt?: Date;
 }

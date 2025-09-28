@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UpdateItemMetadataDto } from '../../../application/dtos/item/update-item-metadata.dto';
 import { ChangeDesiredQuantityDto } from '../../../application/dtos/item/change-desired-quantity.dto';
@@ -50,7 +51,7 @@ export class ItemsController {
     description: 'Usuário não tem permissão para atualizar este item',
   })
   async updateItemMetadata(
-    @Param('id') itemId: string,
+    @Param('id', ParseMongoIdPipe) itemId: string,
     @GetUser() user: User,
     @Body() updateItemDto: UpdateItemMetadataDto,
   ): Promise<Item> {
@@ -95,7 +96,7 @@ export class ItemsController {
     description: 'Quantidade inválida',
   })
   async changeDesiredQuantity(
-    @Param('id') itemId: string,
+    @Param('id', ParseMongoIdPipe) itemId: string,
     @GetUser() user: User,
     @Body() changeQuantityDto: ChangeDesiredQuantityDto,
   ): Promise<Item> {
@@ -150,7 +151,7 @@ export class ItemsController {
     description: 'Quantidade recebida excede a quantidade disponível',
   })
   async markAsReceived(
-    @Param('id') itemId: string,
+    @Param('id', ParseMongoIdPipe) itemId: string,
     @GetUser() user: User,
     @Body() markAsReceivedDto: MarkAsReceivedDto,
   ): Promise<{ message: string }> {
@@ -190,7 +191,7 @@ export class ItemsController {
     description: 'Usuário não tem permissão para excluir este item',
   })
   async deleteItem(
-    @Param('id') itemId: string,
+    @Param('id', ParseMongoIdPipe) itemId: string,
     @GetUser() user: User,
   ): Promise<void> {
     if (!user._id) {

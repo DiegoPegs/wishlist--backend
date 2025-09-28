@@ -50,8 +50,8 @@ export class UpdateItemMetadataUseCase {
       updateData.title = updateItemDto.title;
     }
 
-    if (updateItemDto.itemType !== undefined) {
-      updateData.itemType = updateItemDto.itemType;
+    if (updateItemDto.description !== undefined) {
+      updateData.description = updateItemDto.description;
     }
 
     if (updateItemDto.link !== undefined) {

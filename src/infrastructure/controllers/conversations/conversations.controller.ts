@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
 import {
   ApiTags,
   ApiOperation,
@@ -52,7 +53,7 @@ export class ConversationsController {
     description: 'Usuário não tem permissão para iniciar conversa sobre este item',
   })
   async startConversation(
-    @Param('itemId') itemId: string,
+    @Param('itemId', ParseMongoIdPipe) itemId: string,
     @GetUser() user: User,
   ): Promise<Conversation> {
     if (!user._id) {
@@ -88,7 +89,7 @@ export class ConversationsController {
     description: 'Usuário não tem permissão para ver esta conversa',
   })
   async getConversationMessages(
-    @Param('id') conversationId: string,
+    @Param('id', ParseMongoIdPipe) conversationId: string,
     @GetUser() user: User,
   ): Promise<AnonymizedMessageDto[]> {
     if (!user._id) {
@@ -138,7 +139,7 @@ export class ConversationsController {
     description: 'Usuário não tem permissão para enviar mensagem nesta conversa',
   })
   async sendMessage(
-    @Param('id') conversationId: string,
+    @Param('id', ParseMongoIdPipe) conversationId: string,
     @GetUser() user: User,
     @Body() sendMessageDto: SendMessageDto,
   ): Promise<{ message: string; timestamp: Date }> {

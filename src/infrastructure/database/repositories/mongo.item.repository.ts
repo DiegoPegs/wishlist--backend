@@ -71,12 +71,14 @@ export class MongoItemRepository implements IItemRepository {
     item._id = safeToString(itemDocument._id);
     item.wishlistId = safeToString(itemDocument.wishlistId);
     item.title = itemDocument.title;
+    item.description = itemDocument.description;
     item.itemType = itemDocument.itemType;
     item.quantity = itemDocument.quantity;
     item.link = itemDocument.link;
     item.imageUrl = itemDocument.imageUrl;
     item.price = itemDocument.price;
     item.notes = itemDocument.notes;
+    item.createdAt = itemDocument.createdAt;
     return item;
   }
 }

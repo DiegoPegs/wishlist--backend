@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateWishlistDto } from '../../../application/dtos/wishlist/create-wishlist.dto';
 import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
 import { UpdateWishlistSharingDto } from '../../../application/dtos/wishlist/update-wishlist-sharing.dto';
+import { UpdateWishlistDto } from '../../../application/dtos/wishlist/update-wishlist.dto';
 import { CreateWishlistUseCase } from '../../../application/use-cases/wishlist/create-wishlist.use-case';
 import { GetUserWishlistsUseCase } from '../../../application/use-cases/wishlist/get-user-wishlists.use-case';
 import { GetWishlistByIdUseCase } from '../../../application/use-cases/wishlist/get-wishlist-by-id.use-case';
@@ -11,6 +12,7 @@ import { RestoreWishlistUseCase } from '../../../application/use-cases/wishlist/
 import { HardDeleteWishlistUseCase } from '../../../application/use-cases/wishlist/hard-delete-wishlist.use-case';
 import { CreateItemUseCase } from '../../../application/use-cases/item/create-item.use-case';
 import { UpdateWishlistSharingUseCase } from '../../../application/use-cases/wishlist/update-wishlist-sharing.use-case';
+import { UpdateWishlistUseCase } from '../../../application/use-cases/wishlist/update-wishlist.use-case';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
 import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
@@ -28,6 +30,7 @@ export class WishlistsService {
     private readonly hardDeleteWishlistUseCase: HardDeleteWishlistUseCase,
     private readonly createItemUseCase: CreateItemUseCase,
     private readonly updateWishlistSharingUseCase: UpdateWishlistSharingUseCase,
+    private readonly updateWishlistUseCase: UpdateWishlistUseCase,
   ) {}
 
   async createWishlist(
@@ -98,5 +101,13 @@ export class WishlistsService {
       updateWishlistSharingDto,
       requesterId,
     );
+  }
+
+  async updateWishlist(
+    wishlistId: string,
+    updateWishlistDto: UpdateWishlistDto,
+    requesterId: string,
+  ): Promise<Wishlist> {
+    return this.updateWishlistUseCase.execute(wishlistId, updateWishlistDto, requesterId);
   }
 }

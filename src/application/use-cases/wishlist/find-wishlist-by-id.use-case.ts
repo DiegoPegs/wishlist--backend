@@ -20,14 +20,14 @@ export class FindWishlistByIdUseCase {
     wishlistId: string,
     requesterId: string,
   ): Promise<WishlistWithItemsDto> {
-    // a. Buscar a wishlist principal pelo ID
-    const wishlist = await this.wishlistRepository.findById(wishlistId);
-    if (!wishlist) {
+    // a. Buscar a wishlist principal pelo ID com populate do usuário
+    const wishlistWithUser = await this.wishlistRepository.findByIdWithUser(wishlistId);
+    if (!wishlistWithUser) {
       throw new NotFoundException('Wishlist not found');
     }
 
     // Verificar se o usuário é o dono da wishlist
-    if (wishlist.userId.toString() !== requesterId) {
+    if (wishlistWithUser.userId._id.toString() !== requesterId) {
       throw new NotFoundException('Wishlist not found');
     }
 
@@ -64,7 +64,13 @@ export class FindWishlistByIdUseCase {
 
     // e. Combinar os dados da wishlist e a lista de itens processados
     const wishlistWithItems: WishlistWithItemsDto = {
-      ...wishlist,
+      _id: wishlistWithUser._id.toString(),
+      userId: wishlistWithUser.userId, // Agora contém o objeto do usuário com name
+      title: wishlistWithUser.title,
+      description: wishlistWithUser.description,
+      sharing: wishlistWithUser.sharing,
+      status: wishlistWithUser.status,
+      archivedAt: wishlistWithUser.archivedAt,
       items: processedItems,
     };
 

@@ -8,49 +8,10 @@ import {
   IsString,
   IsUrl,
   ValidateNested,
-  Min,
-  Max,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ItemType } from '../../../domain/entities/item.entity';
-
-export class CreateQuantityDto {
-  @ApiProperty({
-    description: 'Quantidade desejada do item',
-    example: 2,
-    type: 'number',
-    minimum: 1,
-    maximum: 100,
-  })
-  @IsNumber()
-  @Min(1)
-  @Max(100)
-  desired: number;
-
-  @ApiProperty({
-    description: 'Quantidade reservada do item',
-    example: 0,
-    type: 'number',
-    minimum: 0,
-    maximum: 100,
-  })
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  reserved: number;
-
-  @ApiProperty({
-    description: 'Quantidade recebida do item',
-    example: 0,
-    type: 'number',
-    minimum: 0,
-    maximum: 100,
-  })
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  received: number;
-}
+import { QuantityDto } from './quantity.dto';
 
 export class CreatePriceRangeDto {
   @ApiPropertyOptional({
@@ -88,6 +49,16 @@ export class CreateItemDto {
   @IsNotEmpty()
   title: string;
 
+  @ApiPropertyOptional({
+    description: 'Descrição do item',
+    example: 'Livro sobre boas práticas de programação',
+    type: 'string',
+    maxLength: 1000,
+  })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
   @ApiProperty({
     description: 'Tipo do item',
     example: ItemType.SPECIFIC_PRODUCT,
@@ -98,12 +69,12 @@ export class CreateItemDto {
 
   @ApiPropertyOptional({
     description: 'Informações de quantidade do item',
-    type: CreateQuantityDto,
+    type: QuantityDto,
   })
   @IsOptional()
   @ValidateNested()
-  @Type(() => CreateQuantityDto)
-  quantity?: CreateQuantityDto;
+  @Type(() => QuantityDto)
+  quantity?: QuantityDto;
 
   @ApiPropertyOptional({
     description: 'Link para o produto',

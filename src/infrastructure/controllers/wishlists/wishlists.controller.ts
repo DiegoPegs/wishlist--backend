@@ -24,6 +24,7 @@ import { Item } from '../../../domain/entities/item.entity';
 import { GetUser } from '../users/get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
 import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
+import { WishlistWithLinkDto } from '../../../application/dtos/wishlist/wishlist-with-link.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Wishlists')
@@ -77,7 +78,7 @@ export class WishlistsController {
   @ApiResponse({
     status: 200,
     description: 'Wishlist atualizada com sucesso',
-    type: Wishlist,
+    type: WishlistWithLinkDto,
   })
   @ApiResponse({
     status: 400,
@@ -99,7 +100,7 @@ export class WishlistsController {
     @Param('id', ParseMongoIdPipe) wishlistId: string,
     @Body() updateWishlistDto: UpdateWishlistDto,
     @GetUser() user: User,
-  ): Promise<Wishlist> {
+  ): Promise<WishlistWithLinkDto> {
     if (!user._id) {
       throw new Error('User ID not found');
     }

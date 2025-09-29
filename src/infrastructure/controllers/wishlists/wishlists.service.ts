@@ -17,6 +17,7 @@ import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
 import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
 import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
+import { WishlistWithLinkDto } from '../../../application/dtos/wishlist/wishlist-with-link.dto';
 
 @Injectable()
 export class WishlistsService {
@@ -107,7 +108,7 @@ export class WishlistsService {
     wishlistId: string,
     updateWishlistDto: UpdateWishlistDto,
     requesterId: string,
-  ): Promise<Wishlist> {
+  ): Promise<WishlistWithLinkDto> {
     return this.updateWishlistUseCase.execute(wishlistId, updateWishlistDto, requesterId);
   }
 }

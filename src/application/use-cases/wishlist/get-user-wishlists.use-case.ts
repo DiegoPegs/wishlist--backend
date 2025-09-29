@@ -27,15 +27,20 @@ export class GetUserWishlistsUseCase {
         const plainWishlist = this.convertToPlainObject(wishlist);
 
         // 4. Mapear wishlist para DTO limpo
+        const sharing = {
+          isPublic: plainWishlist.sharing.isPublic,
+          publicLinkToken: plainWishlist.sharing.publicLinkToken,
+          publicLink: plainWishlist.sharing.isPublic && plainWishlist.sharing.publicLinkToken
+            ? `${process.env.FRONTEND_URL}/public/${plainWishlist.sharing.publicLinkToken}`
+            : undefined,
+        };
+
         const wishlistDto: WishlistWithItemsResponseDto = {
           _id: plainWishlist._id.toString(),
           userId: plainWishlist.userId.toString(),
           title: plainWishlist.title,
           description: plainWishlist.description,
-          sharing: {
-            isPublic: plainWishlist.sharing.isPublic,
-            publicLinkToken: plainWishlist.sharing.publicLinkToken,
-          },
+          sharing,
           status: plainWishlist.status,
           archivedAt: plainWishlist.archivedAt?.toISOString(),
           items: items.map(item => this.mapItemToDto(item)),

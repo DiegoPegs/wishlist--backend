@@ -63,12 +63,19 @@ export class FindWishlistByIdUseCase {
     });
 
     // e. Combinar os dados da wishlist e a lista de itens processados
+    const sharing = {
+      ...wishlistWithUser.sharing,
+      publicLink: wishlistWithUser.sharing.isPublic && wishlistWithUser.sharing.publicLinkToken
+        ? `${process.env.FRONTEND_URL}/public/${wishlistWithUser.sharing.publicLinkToken}`
+        : undefined,
+    };
+
     const wishlistWithItems: WishlistWithItemsDto = {
       _id: wishlistWithUser._id.toString(),
       userId: wishlistWithUser.userId, // Agora contém o objeto do usuário com name
       title: wishlistWithUser.title,
       description: wishlistWithUser.description,
-      sharing: wishlistWithUser.sharing,
+      sharing,
       status: wishlistWithUser.status,
       archivedAt: wishlistWithUser.archivedAt,
       items: processedItems,

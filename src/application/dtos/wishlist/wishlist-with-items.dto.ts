@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { Item } from '../../../domain/entities/item.entity';
+import { SharingWithLinkDto } from './sharing-with-link.dto';
 
 export class WishlistWithItemsDto extends Wishlist {
   @ApiProperty({
@@ -18,4 +19,10 @@ export class WishlistWithItemsDto extends Wishlist {
     ],
   })
   items: Item[];
+
+  @ApiProperty({
+    description: 'Configurações de compartilhamento da wishlist com URL pública',
+    type: SharingWithLinkDto,
+  })
+  sharing: SharingWithLinkDto;
 }

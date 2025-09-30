@@ -3,6 +3,9 @@ import {
   IsOptional,
   IsString,
   IsNumber,
+  IsInt,
+  Min,
+  Max,
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -15,7 +18,9 @@ export class BirthDateDto {
     minimum: 1,
     maximum: 31,
   })
-  @IsNumber()
+  @IsInt()
+  @Min(1)
+  @Max(31)
   day: number;
 
   @ApiProperty({
@@ -24,7 +29,9 @@ export class BirthDateDto {
     minimum: 1,
     maximum: 12,
   })
-  @IsNumber()
+  @IsInt()
+  @Min(1)
+  @Max(12)
   month: number;
 
   @ApiPropertyOptional({
@@ -34,7 +41,7 @@ export class BirthDateDto {
     maximum: 2100,
   })
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   year?: number;
 }
 

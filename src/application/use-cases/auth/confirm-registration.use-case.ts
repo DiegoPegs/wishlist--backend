@@ -18,13 +18,17 @@ export class ConfirmRegistrationUseCase {
     private readonly cognitoService: CognitoService,
   ) {}
 
-  async execute(dto: ConfirmRegistrationDto): Promise<{ user: User; message: string }> {
+  async execute(
+    dto: ConfirmRegistrationDto,
+  ): Promise<{ user: User; message: string }> {
     try {
       // 1. Confirmar registro no AWS Cognito
       await this.cognitoService.confirmSignUp(dto.username, dto.code);
 
       // 2. Buscar usuário no nosso banco MongoDB (incluindo usuários pendentes)
-      const user = await this.userRepository.findByUsernameForAuth(dto.username);
+      const user = await this.userRepository.findByUsernameForAuth(
+        dto.username,
+      );
       if (!user) {
         throw new NotFoundException('Usuário não encontrado');
       }
@@ -41,7 +45,9 @@ export class ConfirmRegistrationUseCase {
 
       // 4. Verificar se o usuário está pendente de confirmação
       if (user.status !== UserStatus.PENDING_CONFIRMATION) {
-        throw new BadRequestException('Usuário está em estado inválido para confirmação');
+        throw new BadRequestException(
+          'Usuário está em estado inválido para confirmação',
+        );
       }
 
       // 5. Atualizar status para ATIVO
@@ -70,7 +76,9 @@ export class ConfirmRegistrationUseCase {
       if (error.name === 'NotAuthorizedException') {
         // Usuário já foi confirmado no Cognito, mas pode não estar ativo no nosso banco
         // Vamos tentar ativar no nosso banco mesmo assim
-        const user = await this.userRepository.findByUsernameForAuth(dto.username);
+        const user = await this.userRepository.findByUsernameForAuth(
+          dto.username,
+        );
         if (!user) {
           throw new NotFoundException('Usuário não encontrado');
         }
@@ -105,13 +113,17 @@ export class ConfirmRegistrationUseCase {
       }
 
       // Re-throw se for um erro já tratado pelo NestJS
-      if (error instanceof BadRequestException ||
-          error instanceof NotFoundException ||
-          error instanceof UnauthorizedException) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
         throw error;
       }
 
-      throw new BadRequestException(`Erro ao confirmar registro: ${error.message}`);
+      throw new BadRequestException(
+        `Erro ao confirmar registro: ${error.message}`,
+      );
     }
   }
 }

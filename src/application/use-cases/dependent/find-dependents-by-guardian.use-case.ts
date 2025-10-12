@@ -34,10 +34,10 @@ export class FindDependentsByGuardianUseCase {
         await this.userRepository.findDependentsIncludingInactive(dependentIds);
       return dependents.filter((dependent) => dependent.status === status);
     } else {
-      // Se status não foi especificado, buscar todos (incluindo inativos)
-      return await this.userRepository.findDependentsIncludingInactive(
-        dependentIds,
-      );
+      // Se status não foi especificado, buscar apenas dependentes ativos
+      dependents =
+        await this.userRepository.findDependentsIncludingInactive(dependentIds);
+      return dependents.filter((dependent) => dependent.status === 'ACTIVE');
     }
   }
 }

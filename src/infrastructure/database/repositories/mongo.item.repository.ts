@@ -25,7 +25,10 @@ export class MongoItemRepository implements IItemRepository {
   }
 
   async findByWishlistId(_wishlistId: string): Promise<Item[]> {
-    const items = await this.itemModel.find({ wishlistId: _wishlistId }).lean().exec();
+    const items = await this.itemModel
+      .find({ wishlistId: _wishlistId })
+      .lean()
+      .exec();
     return items.map((item) => this.toDomain(item as any));
   }
 
@@ -37,24 +40,30 @@ export class MongoItemRepository implements IItemRepository {
     return updatedItem ? this.toDomain(updatedItem as any) : null;
   }
 
-  async incrementReservedQuantity(_id: string, quantity: number): Promise<Item | null> {
+  async incrementReservedQuantity(
+    _id: string,
+    quantity: number,
+  ): Promise<Item | null> {
     const updatedItem = await this.itemModel
       .findByIdAndUpdate(
         _id,
         { $inc: { 'quantity.reserved': quantity } },
-        { new: true }
+        { new: true },
       )
       .lean()
       .exec();
     return updatedItem ? this.toDomain(updatedItem as any) : null;
   }
 
-  async incrementReceivedQuantity(_id: string, quantity: number): Promise<Item | null> {
+  async incrementReceivedQuantity(
+    _id: string,
+    quantity: number,
+  ): Promise<Item | null> {
     const updatedItem = await this.itemModel
       .findByIdAndUpdate(
         _id,
         { $inc: { 'quantity.received': quantity } },
-        { new: true }
+        { new: true },
       )
       .lean()
       .exec();

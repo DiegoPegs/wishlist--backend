@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
-export type ItemDocument = Item & Document & {
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type ItemDocument = Item &
+  Document & {
+    createdAt: Date;
+    updatedAt: Date;
+  };
 
 export enum ItemType {
   SPECIFIC_PRODUCT = 'SPECIFIC_PRODUCT',

@@ -31,7 +31,10 @@ export class MongoReservationRepository implements IReservationRepository {
 
   async findById(_id: string): Promise<Reservation | null> {
     try {
-      const reservation = await this.reservationModel.findById(_id).lean().exec();
+      const reservation = await this.reservationModel
+        .findById(_id)
+        .lean()
+        .exec();
       return reservation ? this.toDomain(reservation as any) : null;
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -49,7 +52,9 @@ export class MongoReservationRepository implements IReservationRepository {
         .find({ itemId: itemId })
         .lean()
         .exec();
-      return reservations.map((reservation) => this.toDomain(reservation as any));
+      return reservations.map((reservation) =>
+        this.toDomain(reservation as any),
+      );
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -66,7 +71,9 @@ export class MongoReservationRepository implements IReservationRepository {
         .find({ reservedByUserId: _userId })
         .lean()
         .exec();
-      return reservations.map((reservation) => this.toDomain(reservation as any));
+      return reservations.map((reservation) =>
+        this.toDomain(reservation as any),
+      );
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;
@@ -86,7 +93,9 @@ export class MongoReservationRepository implements IReservationRepository {
         .findByIdAndUpdate(_id, data, { new: true })
         .lean()
         .exec();
-      return updatedReservation ? this.toDomain(updatedReservation as any) : null;
+      return updatedReservation
+        ? this.toDomain(updatedReservation as any)
+        : null;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw error;

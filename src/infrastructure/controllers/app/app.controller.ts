@@ -29,7 +29,8 @@ export class AppController {
   @Public()
   @Get('config-status')
   getConfigStatus() {
-    const validation = this.configValidationService.validateEnvironmentVariables();
+    const validation =
+      this.configValidationService.validateEnvironmentVariables();
     const status = this.configValidationService.getConfigurationStatus();
 
     return {

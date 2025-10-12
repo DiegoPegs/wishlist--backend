@@ -2,11 +2,11 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsNumber,
   IsInt,
   Min,
   Max,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -54,7 +54,7 @@ export class CreateDependentDto {
   })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  fullName: string;
 
   @ApiPropertyOptional({
     description: 'Data de nascimento do dependente',
@@ -74,4 +74,8 @@ export class CreateDependentDto {
   @IsOptional()
   @IsString()
   username?: string;
+
+  @ApiProperty({ description: 'Parentesco com o guardião', example: 'son' })
+  @IsEnum(['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'other'])
+  relationship: string;
 }

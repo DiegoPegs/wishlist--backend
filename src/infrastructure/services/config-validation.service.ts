@@ -29,10 +29,14 @@ export class ConfigValidationService {
       clientSecret: process.env.COGNITO_CLIENT_SECRET,
     };
 
-    const cognitoConfigured = Object.values(cognitoConfig).every(value => value && value.trim() !== '');
+    const cognitoConfigured = Object.values(cognitoConfig).every(
+      (value) => value && value.trim() !== '',
+    );
 
     if (!cognitoConfigured) {
-      warnings.push('Configurações do AWS Cognito incompletas - funcionalidades de autenticação avançada desabilitadas');
+      warnings.push(
+        'Configurações do AWS Cognito incompletas - funcionalidades de autenticação avançada desabilitadas',
+      );
     } else {
       this.logger.log('✅ Configurações do AWS Cognito validadas');
     }
@@ -45,10 +49,14 @@ export class ConfigValidationService {
       pass: process.env.SMTP_PASS,
     };
 
-    const emailConfigured = Object.values(emailConfig).every(value => value && value.trim() !== '');
+    const emailConfigured = Object.values(emailConfig).every(
+      (value) => value && value.trim() !== '',
+    );
 
     if (!emailConfigured) {
-      warnings.push('Configurações de email incompletas - funcionalidades de email desabilitadas');
+      warnings.push(
+        'Configurações de email incompletas - funcionalidades de email desabilitadas',
+      );
     } else {
       this.logger.log('✅ Configurações de email validadas');
 
@@ -61,7 +69,9 @@ export class ConfigValidationService {
 
     // Validação do JWT_SECRET
     if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
-      warnings.push('JWT_SECRET deve ter pelo menos 32 caracteres para maior segurança');
+      warnings.push(
+        'JWT_SECRET deve ter pelo menos 32 caracteres para maior segurança',
+      );
     }
 
     const isValid = errors.length === 0;
@@ -92,19 +102,29 @@ export class ConfigValidationService {
     return {
       database: {
         configured: !!process.env.MONGODB_URI,
-        uri: process.env.MONGODB_URI ? '***' + process.env.MONGODB_URI.slice(-10) : 'não configurado',
+        uri: process.env.MONGODB_URI
+          ? '***' + process.env.MONGODB_URI.slice(-10)
+          : 'não configurado',
       },
       jwt: {
         configured: !!process.env.JWT_SECRET,
         secretLength: process.env.JWT_SECRET?.length || 0,
       },
       cognito: {
-        configured: !!(process.env.AWS_REGION && process.env.COGNITO_USER_POOL_ID && process.env.COGNITO_CLIENT_ID),
+        configured: !!(
+          process.env.AWS_REGION &&
+          process.env.COGNITO_USER_POOL_ID &&
+          process.env.COGNITO_CLIENT_ID
+        ),
         region: process.env.AWS_REGION,
         userPoolId: process.env.COGNITO_USER_POOL_ID,
       },
       email: {
-        configured: !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
+        configured: !!(
+          process.env.SMTP_HOST &&
+          process.env.SMTP_USER &&
+          process.env.SMTP_PASS
+        ),
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '0'),
       },

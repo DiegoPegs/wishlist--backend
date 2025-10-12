@@ -11,7 +11,7 @@ import {
   IsUrl,
   ValidateNested,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum ItemType {
   SPECIFIC_PRODUCT = 'SPECIFIC_PRODUCT',

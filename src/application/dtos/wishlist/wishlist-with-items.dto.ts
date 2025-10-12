@@ -21,7 +21,8 @@ export class WishlistWithItemsDto extends Wishlist {
   items: Item[];
 
   @ApiProperty({
-    description: 'Configurações de compartilhamento da wishlist com URL pública',
+    description:
+      'Configurações de compartilhamento da wishlist com URL pública',
     type: SharingWithLinkDto,
   })
   sharing: SharingWithLinkDto;

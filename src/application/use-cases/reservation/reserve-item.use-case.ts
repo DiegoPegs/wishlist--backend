@@ -121,10 +121,13 @@ export class ReserveItemUseCase {
             dto.itemId,
             -dto.quantity, // Decrementar para reverter
           );
-          throw new BadRequestException('Item does not have quantity information');
+          throw new BadRequestException(
+            'Item does not have quantity information',
+          );
         }
 
-        const newAvailableQuantity = updatedItem.quantity.desired - updatedItem.quantity.reserved;
+        const newAvailableQuantity =
+          updatedItem.quantity.desired - updatedItem.quantity.reserved;
         if (newAvailableQuantity < 0) {
           // Reverter o incremento se não há quantidade suficiente
           await this.itemRepository.incrementReservedQuantity(
@@ -148,7 +151,8 @@ export class ReserveItemUseCase {
       reservation.createdAt = new Date();
 
       // Salvar a reserva
-      const createdReservation = await this.reservationRepository.create(reservation);
+      const createdReservation =
+        await this.reservationRepository.create(reservation);
 
       return createdReservation;
     } catch (error: unknown) {

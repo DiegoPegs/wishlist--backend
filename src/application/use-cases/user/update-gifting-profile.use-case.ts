@@ -26,8 +26,11 @@ export class UpdateGiftingProfileUseCase {
     };
 
     // Converter GiftingBirthDateDto para BirthDate se necessário
-    if (updatedGiftingProfile.birthDate && 'day' in updatedGiftingProfile.birthDate) {
-      const birthDateDto = updatedGiftingProfile.birthDate as any;
+    if (
+      updatedGiftingProfile.birthDate &&
+      'day' in updatedGiftingProfile.birthDate
+    ) {
+      const birthDateDto = updatedGiftingProfile.birthDate;
       if (birthDateDto.day !== undefined && birthDateDto.month !== undefined) {
         updatedGiftingProfile.birthDate = {
           day: birthDateDto.day,

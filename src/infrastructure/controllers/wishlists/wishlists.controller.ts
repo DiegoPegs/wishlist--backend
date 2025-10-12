@@ -12,7 +12,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CreateWishlistDto } from '../../../application/dtos/wishlist/create-wishlist.dto';
 import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
 import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
@@ -28,6 +34,7 @@ import { WishlistWithLinkDto } from '../../../application/dtos/wishlist/wishlist
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Wishlists')
+@ApiBearerAuth()
 @Controller('wishlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
@@ -68,7 +75,8 @@ export class WishlistsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Atualizar wishlist',
-    description: 'Atualiza o título e/ou descrição de uma wishlist do usuário autenticado',
+    description:
+      'Atualiza o título e/ou descrição de uma wishlist do usuário autenticado',
   })
   @ApiParam({
     name: 'id',
@@ -125,7 +133,9 @@ export class WishlistsController {
     status: 401,
     description: 'Token JWT inválido ou expirado',
   })
-  async getMyWishlists(@GetUser() user: User): Promise<WishlistWithItemsResponseDto[]> {
+  async getMyWishlists(
+    @GetUser() user: User,
+  ): Promise<WishlistWithItemsResponseDto[]> {
     if (!user._id) {
       throw new Error('User ID not found');
     }
@@ -135,10 +145,10 @@ export class WishlistsController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id/sharing')
   @HttpCode(HttpStatus.OK)
-  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Atualizar configuração de compartilhamento da wishlist',
-    description: 'Permite tornar uma wishlist pública ou privada, gerando um link público quando necessário',
+    description:
+      'Permite tornar uma wishlist pública ou privada, gerando um link público quando necessário',
   })
   @ApiParam({
     name: 'id',
@@ -158,13 +168,16 @@ export class WishlistsController {
         },
         publicLinkToken: {
           type: 'string',
-          description: 'Token único para acesso público (apenas se isPublic for true)',
+          description:
+            'Token único para acesso público (apenas se isPublic for true)',
           example: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6',
         },
         publicUrl: {
           type: 'string',
-          description: 'URL pública para acessar a wishlist (apenas se isPublic for true)',
-          example: 'http://localhost:3000/public/wishlists/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6',
+          description:
+            'URL pública para acessar a wishlist (apenas se isPublic for true)',
+          example:
+            'http://localhost:3000/public/wishlists/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6',
         },
       },
     },
@@ -402,7 +415,8 @@ export class WishlistsController {
   })
   @ApiResponse({
     status: 403,
-    description: 'Usuário não tem permissão para adicionar itens a esta wishlist',
+    description:
+      'Usuário não tem permissão para adicionar itens a esta wishlist',
   })
   async createItem(
     @Param('id', ParseMongoIdPipe) wishlistId: string,

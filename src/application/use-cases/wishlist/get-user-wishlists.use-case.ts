@@ -21,7 +21,9 @@ export class GetUserWishlistsUseCase {
     // 2. Para cada wishlist, buscar seus itens e mapear para DTOs limpos
     const wishlistsWithItems = await Promise.all(
       wishlists.map(async (wishlist) => {
-        const items = await this.itemRepository.findByWishlistId(wishlist._id.toString());
+        const items = await this.itemRepository.findByWishlistId(
+          wishlist._id.toString(),
+        );
 
         // 3. Converter wishlist para objeto JavaScript puro (POJO)
         const plainWishlist = this.convertToPlainObject(wishlist);
@@ -30,9 +32,11 @@ export class GetUserWishlistsUseCase {
         const sharing = {
           isPublic: plainWishlist.sharing.isPublic,
           publicLinkToken: plainWishlist.sharing.publicLinkToken,
-          publicLink: plainWishlist.sharing.isPublic && plainWishlist.sharing.publicLinkToken
-            ? `${process.env.FRONTEND_URL}/public/${plainWishlist.sharing.publicLinkToken}`
-            : undefined,
+          publicLink:
+            plainWishlist.sharing.isPublic &&
+            plainWishlist.sharing.publicLinkToken
+              ? `${process.env.FRONTEND_URL}/public/${plainWishlist.sharing.publicLinkToken}`
+              : undefined,
         };
 
         const wishlistDto: WishlistWithItemsResponseDto = {
@@ -43,11 +47,11 @@ export class GetUserWishlistsUseCase {
           sharing,
           status: plainWishlist.status,
           archivedAt: plainWishlist.archivedAt?.toISOString(),
-          items: items.map(item => this.mapItemToDto(item)),
+          items: items.map((item) => this.mapItemToDto(item)),
         };
 
         return wishlistDto;
-      })
+      }),
     );
 
     return wishlistsWithItems;
@@ -78,17 +82,21 @@ export class GetUserWishlistsUseCase {
       wishlistId: plainItem.wishlistId.toString(),
       title: plainItem.title,
       itemType: plainItem.itemType,
-      quantity: plainItem.quantity ? {
-        desired: plainItem.quantity.desired,
-        reserved: plainItem.quantity.reserved,
-        received: plainItem.quantity.received,
-      } : undefined,
+      quantity: plainItem.quantity
+        ? {
+            desired: plainItem.quantity.desired,
+            reserved: plainItem.quantity.reserved,
+            received: plainItem.quantity.received,
+          }
+        : undefined,
       link: plainItem.link,
       imageUrl: plainItem.imageUrl,
-      price: plainItem.price ? {
-        min: plainItem.price.min,
-        max: plainItem.price.max,
-      } : undefined,
+      price: plainItem.price
+        ? {
+            min: plainItem.price.min,
+            max: plainItem.price.max,
+          }
+        : undefined,
       notes: plainItem.notes,
     };
   }
@@ -100,17 +108,21 @@ export class GetUserWishlistsUseCase {
       wishlistId: item.wishlistId,
       title: item.title,
       itemType: item.itemType,
-      quantity: item.quantity ? {
-        desired: item.quantity.desired,
-        reserved: item.quantity.reserved,
-        received: item.quantity.received,
-      } : undefined,
+      quantity: item.quantity
+        ? {
+            desired: item.quantity.desired,
+            reserved: item.quantity.reserved,
+            received: item.quantity.received,
+          }
+        : undefined,
       link: item.link,
       imageUrl: item.imageUrl,
-      price: item.price ? {
-        min: item.price.min,
-        max: item.price.max,
-      } : undefined,
+      price: item.price
+        ? {
+            min: item.price.min,
+            max: item.price.max,
+          }
+        : undefined,
       notes: item.notes,
     };
   }

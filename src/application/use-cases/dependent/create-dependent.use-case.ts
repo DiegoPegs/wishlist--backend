@@ -21,13 +21,13 @@ export class CreateDependentUseCase {
       }
 
       // Verificar se o nome está presente
-      if (!createDependentDto.name) {
+      if (!createDependentDto.fullName) {
         throw new BadRequestException('Nome do dependente é obrigatório');
       }
 
       // Criar uma nova entidade User para o dependente
       const dependent = new User();
-      dependent.name = createDependentDto.name;
+      dependent.name = createDependentDto.fullName;
       if (createDependentDto.birthDate) {
         dependent.birthDate = createDependentDto.birthDate;
       }

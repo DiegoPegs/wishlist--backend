@@ -1,10 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsOptional,
-  IsString,
-  IsUrl,
-  ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PriceRangeDto } from './price-range.dto';
 

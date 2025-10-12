@@ -17,7 +17,9 @@ export class RegisterUserUseCase {
     private readonly cognitoService: CognitoService,
   ) {}
 
-  async execute(dto: RegisterUserDto): Promise<{ user: User; confirmationRequired: boolean }> {
+  async execute(
+    dto: RegisterUserDto,
+  ): Promise<{ user: User; confirmationRequired: boolean }> {
     // Verificar se o email já existe no nosso banco
     const existingUserByEmail = await this.userRepository.findByEmail(
       dto.email,
@@ -69,12 +71,16 @@ export class RegisterUserUseCase {
     } catch (error: any) {
       // Se der erro no Cognito, verificar se é conflito
       if (error.name === 'UsernameExistsException') {
-        throw new ConflictException('Nome de usuário já está em uso no sistema');
+        throw new ConflictException(
+          'Nome de usuário já está em uso no sistema',
+        );
       }
       if (error.name === 'InvalidParameterException') {
         throw new BadRequestException('Dados inválidos fornecidos');
       }
-      throw new BadRequestException(`Erro ao registrar usuário: ${error.message}`);
+      throw new BadRequestException(
+        `Erro ao registrar usuário: ${error.message}`,
+      );
     }
   }
 }

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, UnauthorizedException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  Inject,
+} from '@nestjs/common';
 import { UpdateWishlistSharingDto } from '../../dtos/wishlist/update-wishlist-sharing.dto';
 import { IWishlistRepository } from '../../../domain/repositories/wishlist.repository.interface';
 import { randomUUID } from 'crypto';
@@ -27,7 +32,9 @@ export class UpdateWishlistSharingUseCase {
     }
 
     if (wishlist.userId !== requesterId) {
-      throw new UnauthorizedException('Você não tem permissão para alterar esta wishlist');
+      throw new UnauthorizedException(
+        'Você não tem permissão para alterar esta wishlist',
+      );
     }
 
     // b. Verificar se a intenção é tornar a lista pública e se ainda não possui token
@@ -67,5 +74,4 @@ export class UpdateWishlistSharingUseCase {
 
     return result;
   }
-
 }

@@ -7,9 +7,10 @@ export class ConvertWishlistToDtoUseCase {
   execute(wishlist: Wishlist): WishlistWithLinkDto {
     const sharing = {
       ...wishlist.sharing,
-      publicLink: wishlist.sharing.isPublic && wishlist.sharing.publicLinkToken
-        ? `${process.env.FRONTEND_URL}/public/${wishlist.sharing.publicLinkToken}`
-        : undefined,
+      publicLink:
+        wishlist.sharing.isPublic && wishlist.sharing.publicLinkToken
+          ? `${process.env.FRONTEND_URL}/public/${wishlist.sharing.publicLinkToken}`
+          : undefined,
     };
 
     return {

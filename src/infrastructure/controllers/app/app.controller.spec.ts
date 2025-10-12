@@ -17,7 +17,11 @@ describe('AppController', () => {
       getConfigurationStatus: jest.fn().mockReturnValue({
         database: { configured: true, uri: 'mongodb://localhost:27017/test' },
         jwt: { configured: true, secretLength: 32 },
-        cognito: { configured: true, region: 'us-east-1', userPoolId: 'test-pool' },
+        cognito: {
+          configured: true,
+          region: 'us-east-1',
+          userPoolId: 'test-pool',
+        },
         email: { configured: true, host: 'smtp.test.com', port: 587 },
       }),
     };
@@ -34,7 +38,9 @@ describe('AppController', () => {
     }).compile();
 
     appController = app.get<AppController>(AppController);
-    configValidationService = app.get<ConfigValidationService>(ConfigValidationService);
+    configValidationService = app.get<ConfigValidationService>(
+      ConfigValidationService,
+    );
   });
 
   describe('root', () => {
@@ -58,7 +64,9 @@ describe('AppController', () => {
       expect(result).toHaveProperty('validation');
       expect(result).toHaveProperty('status');
       expect(result).toHaveProperty('environment');
-      expect(configValidationService.validateEnvironmentVariables).toHaveBeenCalled();
+      expect(
+        configValidationService.validateEnvironmentVariables,
+      ).toHaveBeenCalled();
       expect(configValidationService.getConfigurationStatus).toHaveBeenCalled();
     });
   });

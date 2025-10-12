@@ -41,7 +41,9 @@ export class WishlistsService {
     return this.createWishlistUseCase.execute(createWishlistDto, _userId);
   }
 
-  async getUserWishlists(_userId: string): Promise<WishlistWithItemsResponseDto[]> {
+  async getUserWishlists(
+    _userId: string,
+  ): Promise<WishlistWithItemsResponseDto[]> {
     return this.getUserWishlistsUseCase.execute(_userId);
   }
 
@@ -109,6 +111,10 @@ export class WishlistsService {
     updateWishlistDto: UpdateWishlistDto,
     requesterId: string,
   ): Promise<WishlistWithLinkDto> {
-    return this.updateWishlistUseCase.execute(wishlistId, updateWishlistDto, requesterId);
+    return this.updateWishlistUseCase.execute(
+      wishlistId,
+      updateWishlistDto,
+      requesterId,
+    );
   }
 }

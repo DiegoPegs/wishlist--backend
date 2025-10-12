@@ -81,13 +81,13 @@ export class MarkAsReceivedUseCase {
       // i. Incrementar quantity.received atomicamente
       await this.itemRepository.incrementReceivedQuantity(
         itemId,
-        dto.quantityReceived
+        dto.quantityReceived,
       );
 
       // ii. Decrementar quantity.reserved atomicamente
       await this.itemRepository.incrementReservedQuantity(
         itemId,
-        -dto.quantityReceived
+        -dto.quantityReceived,
       );
 
       // iii. Verificar se ainda há quantidade reservada para determinar o status

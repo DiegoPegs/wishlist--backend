@@ -8,7 +8,6 @@ import {
   Param,
   HttpCode,
   HttpStatus,
-  BadRequestException,
 } from '@nestjs/common';
 import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
 import {
@@ -90,7 +89,8 @@ export class ReservationsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Atualizar quantidade da reserva',
-    description: 'Permite alterar a quantidade de itens reservados sem cancelar a reserva',
+    description:
+      'Permite alterar a quantidade de itens reservados sem cancelar a reserva',
   })
   @ApiParam({
     name: 'id',
@@ -166,7 +166,8 @@ export class ReservationsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Confirmar compra da reserva',
-    description: 'Confirma a compra de um item reservado, marcando a reserva como confirmada',
+    description:
+      'Confirma a compra de um item reservado, marcando a reserva como confirmada',
   })
   @ApiParam({
     name: 'id',

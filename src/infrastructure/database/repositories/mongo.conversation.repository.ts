@@ -23,7 +23,10 @@ export class MongoConversationRepository implements IConversationRepository {
   }
 
   async findById(_id: string): Promise<Conversation | null> {
-    const conversation = await this.conversationModel.findById(_id).lean().exec();
+    const conversation = await this.conversationModel
+      .findById(_id)
+      .lean()
+      .exec();
     return conversation ? this.toDomain(conversation as any) : null;
   }
 
@@ -46,7 +49,9 @@ export class MongoConversationRepository implements IConversationRepository {
       .find({ itemId: itemId })
       .lean()
       .exec();
-    return conversations.map((conversation) => this.toDomain(conversation as any));
+    return conversations.map((conversation) =>
+      this.toDomain(conversation as any),
+    );
   }
 
   async findByUserId(_userId: string): Promise<Conversation[]> {
@@ -54,7 +59,9 @@ export class MongoConversationRepository implements IConversationRepository {
       .find({ participants: _userId })
       .lean()
       .exec();
-    return conversations.map((conversation) => this.toDomain(conversation as any));
+    return conversations.map((conversation) =>
+      this.toDomain(conversation as any),
+    );
   }
 
   async delete(_id: string): Promise<boolean> {

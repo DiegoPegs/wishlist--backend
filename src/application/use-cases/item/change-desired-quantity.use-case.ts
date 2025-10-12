@@ -1,15 +1,21 @@
-import { Injectable, Inject, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  UnauthorizedException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { IItemRepository } from '../../../domain/repositories/item.repository.interface';
 import { IWishlistRepository } from '../../../domain/repositories/wishlist.repository.interface';
 import { ChangeDesiredQuantityDto } from '../../dtos/item/change-desired-quantity.dto';
 import { Item } from '../../../domain/entities/item.entity';
-import { Wishlist } from '../../../domain/entities/wishlist.entity';
 
 @Injectable()
 export class ChangeDesiredQuantityUseCase {
   constructor(
     @Inject('IItemRepository') private readonly itemRepository: IItemRepository,
-    @Inject('IWishlistRepository') private readonly wishlistRepository: IWishlistRepository,
+    @Inject('IWishlistRepository')
+    private readonly wishlistRepository: IWishlistRepository,
   ) {}
 
   async execute(
@@ -24,19 +30,25 @@ export class ChangeDesiredQuantityUseCase {
     }
 
     // 2. Buscar a wishlist para validar permissão
-    const wishlist = await this.wishlistRepository.findById(item.wishlistId.toString());
+    const wishlist = await this.wishlistRepository.findById(
+      item.wishlistId.toString(),
+    );
     if (!wishlist) {
       throw new NotFoundException('Wishlist não encontrada');
     }
 
     // 3. Validar se o usuário é o dono da wishlist
     if (wishlist.userId.toString() !== requesterId) {
-      throw new UnauthorizedException('Você não tem permissão para alterar este item');
+      throw new UnauthorizedException(
+        'Você não tem permissão para alterar este item',
+      );
     }
 
     // 4. Validar se a nova quantidade é diferente da atual
     if (dto.desired === item.quantity?.desired) {
-      throw new BadRequestException('A nova quantidade deve ser diferente da quantidade atual');
+      throw new BadRequestException(
+        'A nova quantidade deve ser diferente da quantidade atual',
+      );
     }
 
     // 5. Se a nova quantidade for menor que a já reservada, iniciar fluxo de cancelamento
@@ -61,7 +73,10 @@ export class ChangeDesiredQuantityUseCase {
     return updatedItem;
   }
 
-  private async handleQuantityReduction(item: Item, newDesired: number): Promise<Item> {
+  private async handleQuantityReduction(
+    item: Item,
+    newDesired: number,
+  ): Promise<Item> {
     // TODO: Implementar lógica complexa de cancelamento de reservas
     // Por enquanto, apenas atualizamos a quantidade
     // Em uma implementação completa, aqui seria necessário:

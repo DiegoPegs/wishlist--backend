@@ -8,6 +8,7 @@ import {
   ApiUnauthorizedResponse,
   ApiNotFoundResponse,
   ApiForbiddenResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AcceptInvitationDto } from '../../../application/dtos/invitation/accept-invitation.dto';
 import { InvitationsService } from './invitations.service';
@@ -15,6 +16,7 @@ import { GetUser } from '../users/get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
 
 @ApiTags('Invitations')
+@ApiBearerAuth()
 @Controller('invitations')
 export class InvitationsController {
   constructor(private readonly invitationsService: InvitationsService) {}

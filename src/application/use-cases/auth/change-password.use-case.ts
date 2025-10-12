@@ -17,7 +17,9 @@ export class ChangePasswordUseCase {
   ): Promise<void> {
     // Validar se a nova senha é diferente da senha atual
     if (changePasswordDto.oldPassword === changePasswordDto.newPassword) {
-      throw new UnauthorizedException('A nova senha deve ser diferente da senha atual');
+      throw new UnauthorizedException(
+        'A nova senha deve ser diferente da senha atual',
+      );
     }
 
     // Decodificar o JWT token para obter o user ID
@@ -42,7 +44,10 @@ export class ChangePasswordUseCase {
 
     try {
       // Primeiro, fazer login no Cognito para obter o AccessToken real
-      const cognitoAuthResult = await this.cognitoService.signIn(username, changePasswordDto.oldPassword);
+      const cognitoAuthResult = await this.cognitoService.signIn(
+        username,
+        changePasswordDto.oldPassword,
+      );
 
       // Usar o AccessToken do Cognito para alterar a senha
       await this.cognitoService.changePassword(
@@ -52,10 +57,14 @@ export class ChangePasswordUseCase {
       );
     } catch (error: any) {
       // Se o usuário não existe no Cognito, informar que precisa ser registrado lá primeiro
-      if (error.name === 'UserNotFoundException' ||
-          error.message?.includes('User does not exist') ||
-          error.message?.includes('User not found')) {
-        throw new UnauthorizedException('Usuário não encontrado no sistema de autenticação. É necessário registrar-se primeiro.');
+      if (
+        error.name === 'UserNotFoundException' ||
+        error.message?.includes('User does not exist') ||
+        error.message?.includes('User not found')
+      ) {
+        throw new UnauthorizedException(
+          'Usuário não encontrado no sistema de autenticação. É necessário registrar-se primeiro.',
+        );
       }
 
       if (error.name === 'NotAuthorizedException') {
@@ -64,19 +73,24 @@ export class ChangePasswordUseCase {
 
       // Se a nova senha não atende às políticas do Cognito
       if (error.name === 'InvalidPasswordException') {
-        throw new UnauthorizedException('A nova senha não atende aos critérios de segurança. A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos especiais.');
+        throw new UnauthorizedException(
+          'A nova senha não atende aos critérios de segurança. A senha deve ter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos especiais.',
+        );
       }
 
       // Se for erro de permissão IAM, informar que precisa configurar o Cognito
-      if (error.name === 'UnrecognizedClientException' ||
-          error.name === 'AccessDeniedException' ||
-          error.message?.includes('security token') ||
-          error.message?.includes('invalid')) {
-        throw new UnauthorizedException('Erro de configuração do AWS Cognito. Entre em contato com o administrador.');
+      if (
+        error.name === 'UnrecognizedClientException' ||
+        error.name === 'AccessDeniedException' ||
+        error.message?.includes('security token') ||
+        error.message?.includes('invalid')
+      ) {
+        throw new UnauthorizedException(
+          'Erro de configuração do AWS Cognito. Entre em contato com o administrador.',
+        );
       }
 
       throw error;
     }
   }
-
 }

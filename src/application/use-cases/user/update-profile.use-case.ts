@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { UpdateProfileDto } from '../../dtos/user/update-profile.dto';
 import { User, BirthDate } from '../../../domain/entities/user.entity';
 import type { IUserRepository } from '../../../domain/repositories/user.repository.interface';
@@ -10,7 +15,10 @@ export class UpdateProfileUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(userId: string, updateProfileDto: UpdateProfileDto): Promise<User> {
+  async execute(
+    userId: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<User> {
     // Verificar se o usuário existe
     const existingUser = await this.userRepository.findById(userId);
     if (!existingUser) {
@@ -19,11 +27,13 @@ export class UpdateProfileUseCase {
 
     // Validar se pelo menos um campo foi fornecido para atualização
     const hasFieldsToUpdate = Object.keys(updateProfileDto).some(
-      key => updateProfileDto[key as keyof UpdateProfileDto] !== undefined
+      (key) => updateProfileDto[key as keyof UpdateProfileDto] !== undefined,
     );
 
     if (!hasFieldsToUpdate) {
-      throw new BadRequestException('Pelo menos um campo deve ser fornecido para atualização');
+      throw new BadRequestException(
+        'Pelo menos um campo deve ser fornecido para atualização',
+      );
     }
 
     // Preparar dados para atualização (apenas campos definidos)
@@ -58,4 +68,3 @@ export class UpdateProfileUseCase {
     return updatedUser;
   }
 }
-

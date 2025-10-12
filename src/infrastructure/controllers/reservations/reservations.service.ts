@@ -31,7 +31,10 @@ export class ReservationsService {
     return this.getUserReservationsUseCase.execute(userId);
   }
 
-  async getReservation(reservationId: string, userId: string): Promise<Reservation> {
+  async getReservation(
+    reservationId: string,
+    userId: string,
+  ): Promise<Reservation> {
     return this.getReservationUseCase.execute(reservationId, userId);
   }
 

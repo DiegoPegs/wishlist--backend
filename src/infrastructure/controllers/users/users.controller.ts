@@ -28,6 +28,7 @@ import {
   ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiConflictResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UpdateGiftingProfileDto } from '../../../application/dtos/user/update-gifting-profile.dto';
 import { UpdateProfileDto } from '../../../application/dtos/user/update-profile.dto';
@@ -38,9 +39,11 @@ import { UsersService } from './users.service';
 import { GetUser } from './get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
+import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -71,7 +74,8 @@ export class UsersController {
   @Put('me')
   @ApiOperation({
     summary: 'Atualizar perfil do usuário',
-    description: 'Atualiza as informações básicas do perfil do usuário autenticado',
+    description:
+      'Atualiza as informações básicas do perfil do usuário autenticado',
   })
   @ApiBody({
     type: UpdateProfileDto,
@@ -201,6 +205,81 @@ export class UsersController {
     }
     return await this.usersService.createDependent(
       createDependentDto,
+      user._id.toString(),
+    );
+  }
+
+  @Get('dependents/:id/wishlists')
+  @ApiOperation({
+    summary: 'Buscar wishlists de um dependente',
+    description:
+      'Busca todas as wishlists de um dependente específico. Apenas guardiões autorizados podem visualizar.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Lista de wishlists do dependente obtida com sucesso',
+    type: [Wishlist],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiForbiddenResponse({
+    description:
+      'Usuário não tem permissão para visualizar as wishlists deste dependente',
+  })
+  async findDependentWishlists(
+    @Param('id', ParseMongoIdPipe) dependentId: string,
+    @GetUser() user: User,
+  ): Promise<Wishlist[]> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.findDependentWishlists(
+      dependentId,
+      user._id.toString(),
+    );
+  }
+
+  @Get('dependents/:dependentId/wishlists')
+  @ApiOperation({
+    summary: 'Listar wishlists de um dependente',
+    description:
+      'Lista todas as wishlists de um dependente específico. Apenas guardiões autorizados podem visualizar.',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Lista de wishlists do dependente obtida com sucesso',
+    type: [WishlistWithItemsResponseDto],
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description:
+      'Usuário não tem permissão para visualizar as wishlists deste dependente',
+  })
+  async getDependentWishlists(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @GetUser() user: User,
+  ): Promise<WishlistWithItemsResponseDto[]> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.getDependentWishlists(
+      dependentId,
       user._id.toString(),
     );
   }
@@ -548,7 +627,8 @@ export class UsersController {
   @Get(':username/following')
   @ApiOperation({
     summary: 'Obter usuários seguidos',
-    description: 'Retorna a lista de usuários que um usuário específico está seguindo',
+    description:
+      'Retorna a lista de usuários que um usuário específico está seguindo',
   })
   @ApiParam({
     name: 'username',

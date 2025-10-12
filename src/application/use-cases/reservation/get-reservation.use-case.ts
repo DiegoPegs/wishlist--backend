@@ -16,7 +16,8 @@ export class GetReservationUseCase {
 
   async execute(reservationId: string, userId: string): Promise<Reservation> {
     // Buscar a reserva
-    const reservation = await this.reservationRepository.findById(reservationId);
+    const reservation =
+      await this.reservationRepository.findById(reservationId);
     if (!reservation) {
       throw new NotFoundException('Reservation not found');
     }

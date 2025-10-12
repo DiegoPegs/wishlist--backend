@@ -15,6 +15,8 @@ import { DeactivateDependentUseCase } from '../../../application/use-cases/depen
 import { RestoreDependentUseCase } from '../../../application/use-cases/dependent/restore-dependent.use-case';
 import { PermanentlyDeleteDependentUseCase } from '../../../application/use-cases/dependent/permanently-delete-dependent.use-case';
 import { FindDependentsByGuardianUseCase } from '../../../application/use-cases/dependent/find-dependents-by-guardian.use-case';
+import { FindDependentWishlistsUseCase } from '../../../application/use-cases/user/find-dependent-wishlists.use-case';
+import { GetDependentWishlistsUseCase } from '../../../application/use-cases/wishlist/get-dependent-wishlists.use-case';
 import { CreateDependentWishlistUseCase } from '../../../application/use-cases/wishlist/create-dependent-wishlist.use-case';
 import { RemoveGuardianshipUseCase } from '../../../application/use-cases/user/remove-guardianship.use-case';
 import { MongoUserRepository } from '../../database/repositories/mongo.user.repository';
@@ -24,7 +26,6 @@ import { MongoItemRepository } from '../../database/repositories/mongo.item.repo
 import { MongoReservationRepository } from '../../database/repositories/mongo.reservation.repository';
 import { MongoConversationRepository } from '../../database/repositories/mongo.conversation.repository';
 import { MongoMessageRepository } from '../../database/repositories/mongo.message.repository';
-import { PasswordHasherService } from '../auth/password-hasher.service';
 import { User, UserSchema } from '../../database/schemas/user.schema';
 import {
   Invitation,
@@ -76,7 +77,9 @@ import { AuthModule } from '../auth/auth.module';
     DeactivateDependentUseCase,
     RestoreDependentUseCase,
     PermanentlyDeleteDependentUseCase,
-    FindDependentsByGuardianUseCase,
+          FindDependentsByGuardianUseCase,
+          FindDependentWishlistsUseCase,
+          GetDependentWishlistsUseCase,
     CreateDependentWishlistUseCase,
     RemoveGuardianshipUseCase,
     {

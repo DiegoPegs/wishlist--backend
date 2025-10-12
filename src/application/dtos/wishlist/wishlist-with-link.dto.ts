@@ -33,7 +33,8 @@ export class WishlistWithLinkDto {
   description?: string;
 
   @ApiProperty({
-    description: 'Configurações de compartilhamento da wishlist com URL pública',
+    description:
+      'Configurações de compartilhamento da wishlist com URL pública',
     type: SharingWithLinkDto,
   })
   sharing: SharingWithLinkDto;

@@ -1,10 +1,5 @@
 import { Controller, Get, Param, HttpCode, HttpStatus } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { PublicWishlistDto } from '../../../application/dtos/public/public-wishlist.dto';
 import { PublicService } from './public.service';
 import { Public } from '../auth/decorators/public.decorator';
@@ -19,7 +14,8 @@ export class PublicController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Obter wishlist pública',
-    description: 'Retorna uma wishlist pública usando o token de link compartilhado',
+    description:
+      'Retorna uma wishlist pública usando o token de link compartilhado',
   })
   @ApiParam({
     name: 'token',

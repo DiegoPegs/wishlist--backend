@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  Inject,
+} from '@nestjs/common';
 import { UpdateWishlistDto } from '../../dtos/wishlist/update-wishlist.dto';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { WishlistWithLinkDto } from '../../dtos/wishlist/wishlist-with-link.dto';
@@ -40,7 +45,10 @@ export class UpdateWishlistUseCase {
       updateData.description = dto.description;
     }
 
-    const updatedWishlist = await this.wishlistRepository.update(wishlistId, updateData);
+    const updatedWishlist = await this.wishlistRepository.update(
+      wishlistId,
+      updateData,
+    );
     if (!updatedWishlist) {
       throw new NotFoundException('Failed to update wishlist');
     }

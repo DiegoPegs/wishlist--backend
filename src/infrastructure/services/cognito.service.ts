@@ -7,7 +7,6 @@ import {
   SignUpCommand,
   ConfirmSignUpCommand,
   InitiateAuthCommand,
-  AdminInitiateAuthCommand,
   AuthFlowType,
   AdminGetUserCommand,
   AdminCreateUserCommand,
@@ -231,7 +230,10 @@ export class CognitoService {
     await this.cognitoClient.send(command);
   }
 
-  async adminSetUserPassword(username: string, newPassword: string): Promise<void> {
+  async adminSetUserPassword(
+    username: string,
+    newPassword: string,
+  ): Promise<void> {
     const command = new AdminSetUserPasswordCommand({
       UserPoolId: this.userPoolId,
       Username: username,

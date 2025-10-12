@@ -24,7 +24,9 @@ export class EmailService implements IEmailService {
 
     // Validação das configurações SMTP
     if (!smtpConfig.host || !smtpConfig.auth.user || !smtpConfig.auth.pass) {
-      this.logger.warn('Configurações SMTP incompletas. Serviço de email desabilitado.');
+      this.logger.warn(
+        'Configurações SMTP incompletas. Serviço de email desabilitado.',
+      );
       return;
     }
 
@@ -83,7 +85,9 @@ export class EmailService implements IEmailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Email de convite enviado para ${recipientEmail}: ${result.messageId}`);
+      this.logger.log(
+        `Email de convite enviado para ${recipientEmail}: ${result.messageId}`,
+      );
       return true;
     } catch (error) {
       this.logger.error(`Erro ao enviar email para ${recipientEmail}:`, error);
@@ -126,10 +130,15 @@ export class EmailService implements IEmailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Email de redefinição enviado para ${recipientEmail}: ${result.messageId}`);
+      this.logger.log(
+        `Email de redefinição enviado para ${recipientEmail}: ${result.messageId}`,
+      );
       return true;
     } catch (error) {
-      this.logger.error(`Erro ao enviar email de redefinição para ${recipientEmail}:`, error);
+      this.logger.error(
+        `Erro ao enviar email de redefinição para ${recipientEmail}:`,
+        error,
+      );
       return false;
     }
   }

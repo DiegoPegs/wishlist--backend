@@ -53,7 +53,7 @@ export class CancelReservationUseCase {
       // Decrementar atomicamente a quantidade reservada do item
       await this.itemRepository.incrementReservedQuantity(
         reservation.itemId,
-        -reservation.quantity // Decrementar pela quantidade total da reserva
+        -reservation.quantity, // Decrementar pela quantidade total da reserva
       );
 
       return updatedReservation;
@@ -61,7 +61,9 @@ export class CancelReservationUseCase {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('An unknown error occurred during reservation cancellation');
+      throw new Error(
+        'An unknown error occurred during reservation cancellation',
+      );
     }
   }
 }

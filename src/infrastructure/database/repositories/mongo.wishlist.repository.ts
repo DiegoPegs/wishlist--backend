@@ -38,7 +38,10 @@ export class MongoWishlistRepository implements IWishlistRepository {
   }
 
   async findByUserId(_userId: string): Promise<Wishlist[]> {
-    const wishlists = await this.wishlistModel.find({ userId: _userId }).lean().exec();
+    const wishlists = await this.wishlistModel
+      .find({ userId: _userId })
+      .lean()
+      .exec();
     return wishlists.map((wishlist) => this.toDomain(wishlist as any));
   }
 

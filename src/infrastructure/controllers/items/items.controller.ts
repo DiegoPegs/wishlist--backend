@@ -10,7 +10,13 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ParseMongoIdPipe } from '../../pipes/parse-mongo-id.pipe';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UpdateItemMetadataDto } from '../../../application/dtos/item/update-item-metadata.dto';
 import { ChangeDesiredQuantityDto } from '../../../application/dtos/item/change-desired-quantity.dto';
 import { MarkAsReceivedDto } from '../../../application/dtos/item/mark-as-received.dto';
@@ -20,6 +26,7 @@ import { User } from '../../../domain/entities/user.entity';
 import { Item } from '../../../domain/entities/item.entity';
 
 @ApiTags('Items')
+@ApiBearerAuth()
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}

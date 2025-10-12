@@ -22,9 +22,8 @@ import { ConfirmRegistrationDto } from '../../../application/dtos/auth/confirm-r
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { Request } from 'express';
 
-@ApiTags('Authentication')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -55,7 +54,9 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Registro confirmado com sucesso' })
   @ApiResponse({ status: 400, description: 'Código de confirmação inválido' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  async confirmRegistration(@Body() confirmRegistrationDto: ConfirmRegistrationDto) {
+  async confirmRegistration(
+    @Body() confirmRegistrationDto: ConfirmRegistrationDto,
+  ) {
     return await this.authService.confirmRegistration(confirmRegistrationDto);
   }
 
@@ -65,15 +66,25 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Alterar senha do usuário',
-    description: 'Altera a senha do usuário autenticado. A nova senha deve atender aos critérios de segurança do Cognito (mínimo 8 caracteres, incluindo maiúsculas, minúsculas, números e símbolos especiais).'
+    description:
+      'Altera a senha do usuário autenticado. A nova senha deve atender aos critérios de segurança do Cognito (mínimo 8 caracteres, incluindo maiúsculas, minúsculas, números e símbolos especiais).',
   })
   @ApiResponse({ status: 204, description: 'Senha alterada com sucesso' })
   @ApiResponse({ status: 400, description: 'Dados inválidos fornecidos' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
   @ApiResponse({ status: 401, description: 'Senha atual incorreta' })
-  @ApiResponse({ status: 401, description: 'A nova senha deve ser diferente da senha atual' })
-  @ApiResponse({ status: 401, description: 'A nova senha não atende aos critérios de segurança' })
-  @ApiResponse({ status: 401, description: 'Usuário não encontrado no sistema de autenticação' })
+  @ApiResponse({
+    status: 401,
+    description: 'A nova senha deve ser diferente da senha atual',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'A nova senha não atende aos critérios de segurança',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Usuário não encontrado no sistema de autenticação',
+  })
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @GetAccessToken() accessToken: string,

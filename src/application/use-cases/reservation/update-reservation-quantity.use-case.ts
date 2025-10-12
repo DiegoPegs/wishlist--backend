@@ -26,7 +26,8 @@ export class UpdateReservationQuantityUseCase {
     requesterId: string,
   ): Promise<Reservation> {
     // a. Buscar a reserva
-    const reservation = await this.reservationRepository.findById(reservationId);
+    const reservation =
+      await this.reservationRepository.findById(reservationId);
     if (!reservation) {
       throw new NotFoundException('Reservation not found');
     }
@@ -37,10 +38,12 @@ export class UpdateReservationQuantityUseCase {
     }
 
     // c. Validar status atual da reserva
-    if (reservation.status !== ReservationStatus.RESERVED &&
-        reservation.status !== ReservationStatus.PURCHASED) {
+    if (
+      reservation.status !== ReservationStatus.RESERVED &&
+      reservation.status !== ReservationStatus.PURCHASED
+    ) {
       throw new BadRequestException(
-        'Only RESERVED or PURCHASED reservations can have their quantity updated'
+        'Only RESERVED or PURCHASED reservations can have their quantity updated',
       );
     }
 
@@ -63,7 +66,7 @@ export class UpdateReservationQuantityUseCase {
     const availableQuantity = item.quantity.desired - item.quantity.reserved;
     if (quantityDifference > availableQuantity) {
       throw new BadRequestException(
-        `Insufficient quantity available. Only ${availableQuantity} items available for reservation`
+        `Insufficient quantity available. Only ${availableQuantity} items available for reservation`,
       );
     }
 
@@ -74,7 +77,7 @@ export class UpdateReservationQuantityUseCase {
         reservationId,
         {
           quantity: newQuantity,
-        }
+        },
       );
 
       if (!updatedReservation) {
@@ -84,7 +87,7 @@ export class UpdateReservationQuantityUseCase {
       // Atualizar atomicamente a quantidade reservada do item
       const updatedItem = await this.itemRepository.incrementReservedQuantity(
         reservation.itemId,
-        quantityDifference
+        quantityDifference,
       );
 
       if (!updatedItem) {
@@ -96,20 +99,23 @@ export class UpdateReservationQuantityUseCase {
         // Reverter as mudanças se não há quantidade definida
         await this.itemRepository.incrementReservedQuantity(
           reservation.itemId,
-          -quantityDifference
+          -quantityDifference,
         );
-        throw new BadRequestException('Item does not have quantity information after update');
+        throw new BadRequestException(
+          'Item does not have quantity information after update',
+        );
       }
 
-      const finalAvailableQuantity = updatedItem.quantity.desired - updatedItem.quantity.reserved;
+      const finalAvailableQuantity =
+        updatedItem.quantity.desired - updatedItem.quantity.reserved;
       if (finalAvailableQuantity < 0) {
         // Reverter as mudanças se não há quantidade suficiente
         await this.itemRepository.incrementReservedQuantity(
           reservation.itemId,
-          -quantityDifference
+          -quantityDifference,
         );
         throw new BadRequestException(
-          'Insufficient quantity available after update'
+          'Insufficient quantity available after update',
         );
       }
 

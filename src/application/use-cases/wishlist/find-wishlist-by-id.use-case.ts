@@ -21,7 +21,8 @@ export class FindWishlistByIdUseCase {
     requesterId: string,
   ): Promise<WishlistWithItemsDto> {
     // a. Buscar a wishlist principal pelo ID com populate do usuário
-    const wishlistWithUser = await this.wishlistRepository.findByIdWithUser(wishlistId);
+    const wishlistWithUser =
+      await this.wishlistRepository.findByIdWithUser(wishlistId);
     if (!wishlistWithUser) {
       throw new NotFoundException('Wishlist not found');
     }
@@ -65,9 +66,11 @@ export class FindWishlistByIdUseCase {
     // e. Combinar os dados da wishlist e a lista de itens processados
     const sharing = {
       ...wishlistWithUser.sharing,
-      publicLink: wishlistWithUser.sharing.isPublic && wishlistWithUser.sharing.publicLinkToken
-        ? `${process.env.FRONTEND_URL}/public/${wishlistWithUser.sharing.publicLinkToken}`
-        : undefined,
+      publicLink:
+        wishlistWithUser.sharing.isPublic &&
+        wishlistWithUser.sharing.publicLinkToken
+          ? `${process.env.FRONTEND_URL}/public/${wishlistWithUser.sharing.publicLinkToken}`
+          : undefined,
     };
 
     const wishlistWithItems: WishlistWithItemsDto = {

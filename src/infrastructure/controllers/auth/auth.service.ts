@@ -32,9 +32,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(
-    registerUserDto: RegisterUserDto,
-  ): Promise<{ user: User; accessToken: string; confirmationRequired: boolean }> {
+  async register(registerUserDto: RegisterUserDto): Promise<{
+    user: User;
+    accessToken: string;
+    confirmationRequired: boolean;
+  }> {
     const result = await this.registerUserUseCase.execute(registerUserDto);
     const accessToken = this.generateAccessToken(result.user);
 
@@ -58,7 +60,9 @@ export class AuthService {
     // 2. Verificar se o usuário está ativo
     if (user.status !== UserStatus.ACTIVE) {
       if (user.status === UserStatus.PENDING_CONFIRMATION) {
-        throw new UnauthorizedException('Usuário não confirmado. Verifique seu email.');
+        throw new UnauthorizedException(
+          'Usuário não confirmado. Verifique seu email.',
+        );
       }
       throw new UnauthorizedException('Usuário inativo');
     }
@@ -76,27 +80,37 @@ export class AuthService {
         cognitoUsername,
         loginDto.password,
       );
-      } catch (cognitoError: any) {
-        // Fallback para autenticação local
-        cognitoResult = await this.localAuthFallback(cognitoUsername, loginDto.password);
-      }
+    } catch (cognitoError: any) {
+      // Fallback para autenticação local
+      cognitoResult = await this.localAuthFallback(
+        cognitoUsername,
+        loginDto.password,
+      );
+    }
 
     // 5. Buscar atributos do usuário no Cognito para sincronizar isEmailVerified
     try {
-      const cognitoUser = await this.cognitoService.getUserAttributes(cognitoResult.accessToken);
+      const cognitoUser = await this.cognitoService.getUserAttributes(
+        cognitoResult.accessToken,
+      );
       if (cognitoUser.UserAttributes) {
         const emailVerifiedAttr = cognitoUser.UserAttributes.find(
-          (attr: any) => attr.Name === 'email_verified'
+          (attr: any) => attr.Name === 'email_verified',
         );
         if (emailVerifiedAttr) {
           user.isEmailVerified = emailVerifiedAttr.Value === 'true';
           // Atualizar o usuário no banco de dados
-          await this.userRepository.update(user._id!, { isEmailVerified: user.isEmailVerified });
+          await this.userRepository.update(user._id!, {
+            isEmailVerified: user.isEmailVerified,
+          });
         }
       }
     } catch (cognitoError: any) {
       // Se falhar ao buscar atributos, manter o valor atual
-      console.warn('Falha ao sincronizar status de verificação de e-mail:', cognitoError.message);
+      console.warn(
+        'Falha ao sincronizar status de verificação de e-mail:',
+        cognitoError.message,
+      );
     }
 
     // 6. Gerar JWT token
@@ -114,7 +128,9 @@ export class AuthService {
   async confirmRegistration(
     confirmRegistrationDto: ConfirmRegistrationDto,
   ): Promise<{ user: User; message: string }> {
-    return await this.confirmRegistrationUseCase.execute(confirmRegistrationDto);
+    return await this.confirmRegistrationUseCase.execute(
+      confirmRegistrationDto,
+    );
   }
 
   async validateUser(_userId: string): Promise<User | null> {

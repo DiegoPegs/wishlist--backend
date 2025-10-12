@@ -1,4 +1,12 @@
-import { IsOptional, IsString, IsNotEmpty, MinLength, MaxLength, IsNumber, ValidateNested } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  MaxLength,
+  IsNumber,
+  ValidateNested,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -58,4 +66,3 @@ export class UpdateProfileDto {
   @Type(() => BirthDateDto)
   birthDate?: BirthDateDto;
 }
-

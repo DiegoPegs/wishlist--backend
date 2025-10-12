@@ -50,7 +50,8 @@ export class ConversationsController {
   })
   @ApiResponse({
     status: 403,
-    description: 'Usuário não tem permissão para iniciar conversa sobre este item',
+    description:
+      'Usuário não tem permissão para iniciar conversa sobre este item',
   })
   async startConversation(
     @Param('itemId', ParseMongoIdPipe) itemId: string,
@@ -68,7 +69,8 @@ export class ConversationsController {
   @Get(':id/messages')
   @ApiOperation({
     summary: 'Obter mensagens da conversa',
-    description: 'Retorna todas as mensagens de uma conversa específica (anonimizadas)',
+    description:
+      'Retorna todas as mensagens de uma conversa específica (anonimizadas)',
   })
   @ApiParam({
     name: 'id',
@@ -136,7 +138,8 @@ export class ConversationsController {
   })
   @ApiResponse({
     status: 403,
-    description: 'Usuário não tem permissão para enviar mensagem nesta conversa',
+    description:
+      'Usuário não tem permissão para enviar mensagem nesta conversa',
   })
   async sendMessage(
     @Param('id', ParseMongoIdPipe) conversationId: string,

@@ -16,10 +16,13 @@ import { DeactivateDependentUseCase } from '../../../application/use-cases/depen
 import { RestoreDependentUseCase } from '../../../application/use-cases/dependent/restore-dependent.use-case';
 import { PermanentlyDeleteDependentUseCase } from '../../../application/use-cases/dependent/permanently-delete-dependent.use-case';
 import { FindDependentsByGuardianUseCase } from '../../../application/use-cases/dependent/find-dependents-by-guardian.use-case';
+import { FindDependentWishlistsUseCase } from '../../../application/use-cases/user/find-dependent-wishlists.use-case';
+import { GetDependentWishlistsUseCase } from '../../../application/use-cases/wishlist/get-dependent-wishlists.use-case';
 import { CreateDependentWishlistUseCase } from '../../../application/use-cases/wishlist/create-dependent-wishlist.use-case';
 import { RemoveGuardianshipUseCase } from '../../../application/use-cases/user/remove-guardianship.use-case';
 import { User } from '../../../domain/entities/user.entity';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
+import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
 import type { IUserRepository } from '../../../domain/repositories/user.repository.interface';
 
 @Injectable()
@@ -36,7 +39,9 @@ export class UsersService {
     private readonly deactivateDependentUseCase: DeactivateDependentUseCase,
     private readonly restoreDependentUseCase: RestoreDependentUseCase,
     private readonly permanentlyDeleteDependentUseCase: PermanentlyDeleteDependentUseCase,
-    private readonly findDependentsByGuardianUseCase: FindDependentsByGuardianUseCase,
+          private readonly findDependentsByGuardianUseCase: FindDependentsByGuardianUseCase,
+          private readonly findDependentWishlistsUseCase: FindDependentWishlistsUseCase,
+          private readonly getDependentWishlistsUseCase: GetDependentWishlistsUseCase,
     private readonly createDependentWishlistUseCase: CreateDependentWishlistUseCase,
     private readonly removeGuardianshipUseCase: RemoveGuardianshipUseCase,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
@@ -193,6 +198,26 @@ export class UsersService {
     return await this.findDependentsByGuardianUseCase.execute(
       guardianId,
       status,
+    );
+  }
+
+  async findDependentWishlists(
+    dependentId: string,
+    requesterId: string,
+  ): Promise<Wishlist[]> {
+    return await this.findDependentWishlistsUseCase.execute(
+      dependentId,
+      requesterId,
+    );
+  }
+
+  async getDependentWishlists(
+    dependentId: string,
+    requesterId: string,
+  ): Promise<WishlistWithItemsResponseDto[]> {
+    return await this.getDependentWishlistsUseCase.execute(
+      dependentId,
+      requesterId,
     );
   }
 

@@ -34,8 +34,10 @@ export class UpdateReservationStatusUseCase {
     }
 
     // Verificar se a reserva não está cancelada (exceto se for para cancelar)
-    if (reservation.status === ReservationStatus.CANCELED &&
-        updateReservationStatusDto.status !== ReservationStatus.CANCELED) {
+    if (
+      reservation.status === ReservationStatus.CANCELED &&
+      updateReservationStatusDto.status !== ReservationStatus.CANCELED
+    ) {
       throw new ForbiddenException('Cannot update canceled reservations');
     }
 

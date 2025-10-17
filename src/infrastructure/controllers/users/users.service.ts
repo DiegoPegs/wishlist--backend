@@ -16,6 +16,7 @@ import { DeactivateDependentUseCase } from '../../../application/use-cases/depen
 import { RestoreDependentUseCase } from '../../../application/use-cases/dependent/restore-dependent.use-case';
 import { PermanentlyDeleteDependentUseCase } from '../../../application/use-cases/dependent/permanently-delete-dependent.use-case';
 import { FindDependentsByGuardianUseCase } from '../../../application/use-cases/dependent/find-dependents-by-guardian.use-case';
+import { FindDependentByIdUseCase } from '../../../application/use-cases/user/find-dependent-by-id.use-case';
 import { FindDependentWishlistsUseCase } from '../../../application/use-cases/user/find-dependent-wishlists.use-case';
 import { GetDependentWishlistsUseCase } from '../../../application/use-cases/wishlist/get-dependent-wishlists.use-case';
 import { CreateDependentWishlistUseCase } from '../../../application/use-cases/wishlist/create-dependent-wishlist.use-case';
@@ -40,6 +41,7 @@ export class UsersService {
     private readonly restoreDependentUseCase: RestoreDependentUseCase,
     private readonly permanentlyDeleteDependentUseCase: PermanentlyDeleteDependentUseCase,
           private readonly findDependentsByGuardianUseCase: FindDependentsByGuardianUseCase,
+          private readonly findDependentByIdUseCase: FindDependentByIdUseCase,
           private readonly findDependentWishlistsUseCase: FindDependentWishlistsUseCase,
           private readonly getDependentWishlistsUseCase: GetDependentWishlistsUseCase,
     private readonly createDependentWishlistUseCase: CreateDependentWishlistUseCase,
@@ -198,6 +200,16 @@ export class UsersService {
     return await this.findDependentsByGuardianUseCase.execute(
       guardianId,
       status,
+    );
+  }
+
+  async findDependentById(
+    dependentId: string,
+    requesterId: string,
+  ): Promise<User> {
+    return await this.findDependentByIdUseCase.execute(
+      dependentId,
+      requesterId,
     );
   }
 

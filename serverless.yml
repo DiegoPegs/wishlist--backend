@@ -1,0 +1,44 @@
+service: kero-wishlist-backend
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'development'} # Define o ambiente (dev/prod) via linha de comando
+  region: ${param:region, 'us-east-1'} # Região padrão, pode ser sobrescrita com --param="region=sua-regiao"
+
+  # A role do IAM que a Lambda usará. Você PRECISA anexar a política de acesso ao SSM
+  # que criamos anteriormente a esta role no console da AWS.
+  iam:
+    role: arn:aws:iam::156172784535:policy/KeroWishlist-Backend-SSM-Access # SUBSTITUA PELO ARN DA SUA ROLE
+
+  # Variáveis de ambiente globais para a Lambda
+  environment:
+    NODE_ENV: ${self:provider.stage}
+
+package:
+  individually: true
+  exclude:
+    - .vscode/**
+    - .git/**
+    - test/**
+    - README.md
+
+plugins:
+  - serverless-offline # Permite rodar a aplicação localmente
+
+functions:
+  main:
+    handler: dist/lambda.handler # Aponta para o arquivo compilado
+    events:
+      - httpApi:
+          path: / # Captura a rota raiz
+          method: any
+      - httpApi:
+          path: /{proxy+} # Captura todas as outras rotas (ex: /users, /wishlists/123)
+          method: any
+
+custom:
+  serverless-offline:
+    httpPort: 3000 # Porta para o modo local
+    noPrependStageInUrl: true # Não adiciona /development na URL local

@@ -75,7 +75,11 @@ export class CreateDependentDto {
   @IsString()
   username?: string;
 
-  @ApiProperty({ description: 'Parentesco com o guardião', example: 'son' })
-  @IsEnum(['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'other'])
+  @ApiProperty({
+    description: 'Parentesco com o guardião',
+    example: 'son',
+    enum: ['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'grandson', 'granddaughter', 'other'],
+  })
+  @IsEnum(['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'grandson', 'granddaughter', 'other'])
   relationship: string;
 }

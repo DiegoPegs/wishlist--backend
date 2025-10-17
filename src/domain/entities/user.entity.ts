@@ -245,4 +245,13 @@ export class User {
   @IsArray()
   @IsMongoId({ each: true })
   following?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Parentesco do dependente com o guardião',
+    example: 'son',
+    enum: ['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'grandson', 'granddaughter', 'other'],
+  })
+  @IsOptional()
+  @IsString()
+  relationship?: string;
 }

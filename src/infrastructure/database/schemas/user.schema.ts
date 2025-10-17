@@ -108,6 +108,9 @@ export class User {
     shoeSize?: string;
     notes?: string;
   };
+
+  @Prop({ type: String, required: false })
+  relationship?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

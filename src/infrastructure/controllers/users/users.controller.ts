@@ -209,6 +209,47 @@ export class UsersController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('dependents/:id')
+  @ApiOperation({
+    summary: 'Buscar detalhes de um dependente',
+    description:
+      'Busca os detalhes de um dependente específico. Apenas guardiões autorizados podem visualizar.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Detalhes do dependente obtidos com sucesso',
+    type: User,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description:
+      'Usuário não tem permissão para visualizar os detalhes deste dependente',
+  })
+  async findDependentById(
+    @Param('id', ParseMongoIdPipe) dependentId: string,
+    @GetUser() user: User,
+  ): Promise<User> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.findDependentById(
+      dependentId,
+      user._id.toString(),
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('dependents/:id/wishlists')
   @ApiOperation({
     summary: 'Buscar wishlists de um dependente',
@@ -227,6 +268,9 @@ export class UsersController {
   })
   @ApiUnauthorizedResponse({
     description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente não encontrado',
   })
   @ApiForbiddenResponse({
     description:

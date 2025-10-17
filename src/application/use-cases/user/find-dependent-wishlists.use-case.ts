@@ -1,4 +1,4 @@
-import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
+import { Injectable, Inject, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import type { IUserRepository } from '../../../domain/repositories/user.repository.interface';
 import type { IWishlistRepository } from '../../../domain/repositories/wishlist.repository.interface';
@@ -16,10 +16,10 @@ export class FindDependentWishlistsUseCase {
     dependentId: string,
     requesterId: string,
   ): Promise<Wishlist[]> {
-    // a. Buscar o perfil do dependente e validar se o requesterId é um dos guardiões
+    // Buscar o dependente para validar permissões
     const dependent = await this.userRepository.findById(dependentId);
     if (!dependent) {
-      throw new ForbiddenException('Dependente não encontrado');
+      throw new NotFoundException('Dependente não encontrado');
     }
 
     // Validar se o requesterId é um dos guardiões do dependente
@@ -32,10 +32,10 @@ export class FindDependentWishlistsUseCase {
       );
     }
 
-    // b. Usar o IWishlistRepository para buscar todas as wishlists onde o userId corresponde ao dependentId
+    // Buscar todas as wishlists associadas ao dependentId
     const wishlists = await this.wishlistRepository.findByUserId(dependentId);
 
-    // c. Importante: Se nenhuma lista for encontrada, retornar um array vazio ([]) para evitar erros 404 no futuro
+    // Se nenhuma lista for encontrada, retornar array vazio
     if (!wishlists || wishlists.length === 0) {
       return [];
     }

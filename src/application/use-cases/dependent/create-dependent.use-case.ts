@@ -34,6 +34,9 @@ export class CreateDependentUseCase {
       if (createDependentDto.username) {
         dependent.username = createDependentDto.username;
       }
+      if (createDependentDto.relationship) {
+        dependent.relationship = createDependentDto.relationship;
+      }
       dependent.isDependent = true;
       dependent.status = UserStatus.ACTIVE;
       dependent.guardianIds = [guardianId];

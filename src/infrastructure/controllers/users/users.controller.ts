@@ -32,6 +32,7 @@ import {
 } from '@nestjs/swagger';
 import { UpdateGiftingProfileDto } from '../../../application/dtos/user/update-gifting-profile.dto';
 import { UpdateProfileDto } from '../../../application/dtos/user/update-profile.dto';
+import { UpdateLanguageDto } from '../../../application/dtos/user/update-language.dto';
 import { CreateDependentDto } from '../../../application/dtos/user/create-dependent.dto';
 import { AddGuardianDto } from '../../../application/dtos/user/add-guardian.dto';
 import { CreateDependentWishlistDto } from '../../../application/dtos/wishlist/create-dependent-wishlist.dto';
@@ -104,6 +105,43 @@ export class UsersController {
     return await this.usersService.updateProfile(
       user._id.toString(),
       updateProfileDto,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('me/language')
+  @ApiOperation({
+    summary: 'Atualizar idioma do usuário',
+    description:
+      'Atualiza o idioma preferido do usuário autenticado',
+  })
+  @ApiBody({
+    type: UpdateLanguageDto,
+    description: 'Idioma preferido do usuário',
+  })
+  @ApiOkResponse({
+    description: 'Idioma atualizado com sucesso',
+    type: User,
+  })
+  @ApiBadRequestResponse({
+    description: 'Dados inválidos fornecidos',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Usuário não encontrado',
+  })
+  async updateLanguage(
+    @GetUser() user: User,
+    @Body() updateLanguageDto: UpdateLanguageDto,
+  ): Promise<User> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.updateLanguage(
+      user._id.toString(),
+      updateLanguageDto,
     );
   }
 

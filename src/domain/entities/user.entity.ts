@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserStatus } from '../enums/statuses.enum';
+import { Language } from '../enums/language.enum';
 
 export class BirthDate {
   @ApiProperty({
@@ -194,6 +195,16 @@ export class User {
   })
   @IsEnum(UserStatus)
   status: UserStatus;
+
+  @ApiPropertyOptional({
+    description: 'Idioma preferido do usuário',
+    example: 'pt-BR',
+    enum: Language,
+    default: Language.PORTUGUESE_BRAZIL,
+  })
+  @IsOptional()
+  @IsEnum(Language)
+  language?: Language;
 
   @ApiPropertyOptional({
     description: 'IDs dos guardiões do usuário (apenas para dependentes)',

@@ -6,9 +6,11 @@ import {
   MaxLength,
   IsNumber,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { Language } from '../../../domain/enums/language.enum';
 
 export class BirthDateDto {
   @ApiPropertyOptional({
@@ -65,4 +67,13 @@ export class UpdateProfileDto {
   @ValidateNested()
   @Type(() => BirthDateDto)
   birthDate?: BirthDateDto;
+
+  @ApiPropertyOptional({
+    description: 'Idioma preferido do usuário',
+    example: 'pt-BR',
+    enum: Language,
+  })
+  @IsOptional()
+  @IsEnum(Language)
+  language?: Language;
 }

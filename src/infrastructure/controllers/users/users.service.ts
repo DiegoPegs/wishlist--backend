@@ -1,12 +1,14 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { UpdateGiftingProfileDto } from '../../../application/dtos/user/update-gifting-profile.dto';
 import { UpdateProfileDto } from '../../../application/dtos/user/update-profile.dto';
+import { UpdateLanguageDto } from '../../../application/dtos/user/update-language.dto';
 import { CreateDependentDto } from '../../../application/dtos/user/create-dependent.dto';
 import { AddGuardianDto } from '../../../application/dtos/user/add-guardian.dto';
 import { CreateDependentWishlistDto } from '../../../application/dtos/wishlist/create-dependent-wishlist.dto';
 import { GetCurrentUserUseCase } from '../../../application/use-cases/auth/get-current-user.use-case';
 import { UpdateGiftingProfileUseCase } from '../../../application/use-cases/user/update-gifting-profile.use-case';
 import { UpdateProfileUseCase } from '../../../application/use-cases/user/update-profile.use-case';
+import { UpdateLanguageUseCase } from '../../../application/use-cases/user/update-language.use-case';
 import { GetUserByUsernameUseCase } from '../../../application/use-cases/user/get-user-by-username.use-case';
 import { CreateDependentUseCase } from '../../../application/use-cases/dependent/create-dependent.use-case';
 import { AddGuardianUseCase } from '../../../application/use-cases/dependent/add-guardian.use-case';
@@ -32,6 +34,7 @@ export class UsersService {
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
     private readonly updateGiftingProfileUseCase: UpdateGiftingProfileUseCase,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
+    private readonly updateLanguageUseCase: UpdateLanguageUseCase,
     private readonly getUserByUsernameUseCase: GetUserByUsernameUseCase,
     private readonly createDependentUseCase: CreateDependentUseCase,
     private readonly addGuardianUseCase: AddGuardianUseCase,
@@ -68,6 +71,13 @@ export class UsersService {
     updateProfileDto: UpdateProfileDto,
   ): Promise<User> {
     return this.updateProfileUseCase.execute(_userId, updateProfileDto);
+  }
+
+  async updateLanguage(
+    _userId: string,
+    updateLanguageDto: UpdateLanguageDto,
+  ): Promise<User> {
+    return this.updateLanguageUseCase.execute(_userId, updateLanguageDto);
   }
 
   async getUserByUsername(_username: string): Promise<User> {

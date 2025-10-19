@@ -32,6 +32,7 @@ export class MongoUserRepository implements IUserRepository {
       birthDate: user.birthDate,
       isDependent: user.isDependent,
       status: user.status || UserStatus.ACTIVE,
+      language: user.language,
       guardianIds: (user.guardianIds || []).map((id) => new Types.ObjectId(id)),
       dependents: (user.dependents || []).map((id) => new Types.ObjectId(id)),
       giftingProfile: user.giftingProfile || {},
@@ -262,6 +263,7 @@ export class MongoUserRepository implements IUserRepository {
     user.birthDate = userDocument.birthDate;
     user.isDependent = userDocument.isDependent;
     user.status = userDocument.status;
+    user.language = userDocument.language;
     user.guardianIds = safeToStringArray(userDocument.guardianIds || []);
     user.dependents = safeToStringArray(userDocument.dependents || []);
     user.giftingProfile = userDocument.giftingProfile;

@@ -55,6 +55,10 @@ export class UpdateProfileUseCase {
       }
     }
 
+    if (updateProfileDto.language !== undefined) {
+      updateData.language = updateProfileDto.language;
+    }
+
     // Atualizar o usuário no repositório
     const updatedUser = await this.userRepository.update(userId, updateData);
 

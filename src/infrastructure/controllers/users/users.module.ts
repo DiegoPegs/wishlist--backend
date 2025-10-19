@@ -5,6 +5,7 @@ import { UsersService } from './users.service';
 import { GetCurrentUserUseCase } from '../../../application/use-cases/auth/get-current-user.use-case';
 import { UpdateGiftingProfileUseCase } from '../../../application/use-cases/user/update-gifting-profile.use-case';
 import { UpdateProfileUseCase } from '../../../application/use-cases/user/update-profile.use-case';
+import { UpdateLanguageUseCase } from '../../../application/use-cases/user/update-language.use-case';
 import { GetUserByUsernameUseCase } from '../../../application/use-cases/user/get-user-by-username.use-case';
 import { CreateDependentUseCase } from '../../../application/use-cases/dependent/create-dependent.use-case';
 import { AddGuardianUseCase } from '../../../application/use-cases/dependent/add-guardian.use-case';
@@ -69,6 +70,7 @@ import { AuthModule } from '../auth/auth.module';
     GetCurrentUserUseCase,
     UpdateGiftingProfileUseCase,
     UpdateProfileUseCase,
+    UpdateLanguageUseCase,
     GetUserByUsernameUseCase,
     CreateDependentUseCase,
     AddGuardianUseCase,

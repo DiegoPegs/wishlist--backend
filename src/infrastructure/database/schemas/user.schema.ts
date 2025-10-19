@@ -3,6 +3,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { UserStatus } from '../../../domain/enums/statuses.enum';
+import { Language } from '../../../domain/enums/language.enum';
 
 // Tipo de documento mais preciso, incluindo o tipo do _id
 export type UserDocument = User & Document<Types.ObjectId>;
@@ -52,6 +53,14 @@ export class User {
     required: true,
   })
   status: UserStatus;
+
+  @Prop({
+    type: String,
+    enum: Language,
+    default: Language.PORTUGUESE_BRAZIL,
+    required: false,
+  })
+  language?: Language;
 
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],

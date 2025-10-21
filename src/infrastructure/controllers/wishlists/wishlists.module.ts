@@ -6,6 +6,7 @@ import { CreateWishlistUseCase } from '../../../application/use-cases/wishlist/c
 import { GetUserWishlistsUseCase } from '../../../application/use-cases/wishlist/get-user-wishlists.use-case';
 import { GetWishlistByIdUseCase } from '../../../application/use-cases/wishlist/get-wishlist-by-id.use-case';
 import { FindWishlistByIdUseCase } from '../../../application/use-cases/wishlist/find-wishlist-by-id.use-case';
+import { FindWishlistByIdForGuardianUseCase } from '../../../application/use-cases/wishlist/find-wishlist-by-id-for-guardian.use-case';
 import { SoftDeleteWishlistUseCase } from '../../../application/use-cases/wishlist/soft-delete-wishlist.use-case';
 import { RestoreWishlistUseCase } from '../../../application/use-cases/wishlist/restore-wishlist.use-case';
 import { HardDeleteWishlistUseCase } from '../../../application/use-cases/wishlist/hard-delete-wishlist.use-case';
@@ -19,6 +20,7 @@ import { MongoItemRepository } from '../../database/repositories/mongo.item.repo
 import { MongoReservationRepository } from '../../database/repositories/mongo.reservation.repository';
 import { MongoConversationRepository } from '../../database/repositories/mongo.conversation.repository';
 import { MongoMessageRepository } from '../../database/repositories/mongo.message.repository';
+import { MongoUserRepository } from '../../database/repositories/mongo.user.repository';
 import {
   Wishlist,
   WishlistSchema,
@@ -33,6 +35,7 @@ import {
   ConversationSchema,
 } from '../../database/schemas/conversation.schema';
 import { Message, MessageSchema } from '../../database/schemas/message.schema';
+import { User, UserSchema } from '../../database/schemas/user.schema';
 
 @Module({
   imports: [
@@ -42,6 +45,7 @@ import { Message, MessageSchema } from '../../database/schemas/message.schema';
       { name: Reservation.name, schema: ReservationSchema },
       { name: Conversation.name, schema: ConversationSchema },
       { name: Message.name, schema: MessageSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [WishlistsController],
@@ -51,6 +55,7 @@ import { Message, MessageSchema } from '../../database/schemas/message.schema';
     GetUserWishlistsUseCase,
     GetWishlistByIdUseCase,
     FindWishlistByIdUseCase,
+    FindWishlistByIdForGuardianUseCase,
     SoftDeleteWishlistUseCase,
     RestoreWishlistUseCase,
     HardDeleteWishlistUseCase,
@@ -78,6 +83,10 @@ import { Message, MessageSchema } from '../../database/schemas/message.schema';
     {
       provide: 'IMessageRepository',
       useClass: MongoMessageRepository,
+    },
+    {
+      provide: 'IUserRepository',
+      useClass: MongoUserRepository,
     },
   ],
   exports: [WishlistsService],

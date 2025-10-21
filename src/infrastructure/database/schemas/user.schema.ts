@@ -4,6 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { UserStatus } from '../../../domain/enums/statuses.enum';
 import { Language } from '../../../domain/enums/language.enum';
+import { RelationshipType } from '../../../domain/enums/relationship.enum';
 
 // Tipo de documento mais preciso, incluindo o tipo do _id
 export type UserDocument = User & Document<Types.ObjectId>;
@@ -63,28 +64,28 @@ export class User {
   language?: Language;
 
   @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    type: [String],
     default: [],
   })
-  guardianIds?: Types.ObjectId[];
+  guardianIds?: string[];
 
   @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    type: [String],
     default: [],
   })
-  dependents?: Types.ObjectId[];
+  dependents?: string[];
 
   @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    type: [String],
     default: [],
   })
-  followers?: Types.ObjectId[];
+  followers?: string[];
 
   @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    type: [String],
     default: [],
   })
-  following?: Types.ObjectId[];
+  following?: string[];
 
   @Prop({
     type: {
@@ -118,8 +119,12 @@ export class User {
     notes?: string;
   };
 
-  @Prop({ type: String, required: false })
-  relationship?: string;
+  @Prop({
+    type: String,
+    enum: RelationshipType,
+    required: false
+  })
+  relationship?: RelationshipType;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

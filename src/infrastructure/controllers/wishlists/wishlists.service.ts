@@ -7,6 +7,7 @@ import { CreateWishlistUseCase } from '../../../application/use-cases/wishlist/c
 import { GetUserWishlistsUseCase } from '../../../application/use-cases/wishlist/get-user-wishlists.use-case';
 import { GetWishlistByIdUseCase } from '../../../application/use-cases/wishlist/get-wishlist-by-id.use-case';
 import { FindWishlistByIdUseCase } from '../../../application/use-cases/wishlist/find-wishlist-by-id.use-case';
+import { FindWishlistByIdForGuardianUseCase } from '../../../application/use-cases/wishlist/find-wishlist-by-id-for-guardian.use-case';
 import { SoftDeleteWishlistUseCase } from '../../../application/use-cases/wishlist/soft-delete-wishlist.use-case';
 import { RestoreWishlistUseCase } from '../../../application/use-cases/wishlist/restore-wishlist.use-case';
 import { HardDeleteWishlistUseCase } from '../../../application/use-cases/wishlist/hard-delete-wishlist.use-case';
@@ -26,6 +27,7 @@ export class WishlistsService {
     private readonly getUserWishlistsUseCase: GetUserWishlistsUseCase,
     private readonly getWishlistByIdUseCase: GetWishlistByIdUseCase,
     private readonly findWishlistByIdUseCase: FindWishlistByIdUseCase,
+    private readonly findWishlistByIdForGuardianUseCase: FindWishlistByIdForGuardianUseCase,
     private readonly softDeleteWishlistUseCase: SoftDeleteWishlistUseCase,
     private readonly restoreWishlistUseCase: RestoreWishlistUseCase,
     private readonly hardDeleteWishlistUseCase: HardDeleteWishlistUseCase,
@@ -58,7 +60,7 @@ export class WishlistsService {
     _wishlistId: string,
     _userId: string,
   ): Promise<WishlistWithItemsDto> {
-    return this.findWishlistByIdUseCase.execute(_wishlistId, _userId);
+    return this.findWishlistByIdForGuardianUseCase.execute(_wishlistId, _userId);
   }
 
   async createItem(

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUrl, ValidateNested, ValidateIf } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PriceRangeDto } from './price-range.dto';
 
@@ -31,6 +31,7 @@ export class UpdateItemMetadataDto {
     type: 'string',
   })
   @IsOptional()
+  @ValidateIf((o) => o.link && o.link.trim() !== '')
   @IsUrl()
   link?: string;
 
@@ -40,6 +41,7 @@ export class UpdateItemMetadataDto {
     type: 'string',
   })
   @IsOptional()
+  @ValidateIf((o) => o.imageUrl && o.imageUrl.trim() !== '')
   @IsUrl()
   imageUrl?: string;
 

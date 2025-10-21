@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {
   Wishlist as WishlistSchema,
   WishlistDocument,
@@ -18,7 +18,11 @@ export class MongoWishlistRepository implements IWishlistRepository {
   ) {}
 
   async create(wishlist: Wishlist): Promise<Wishlist> {
-    const createdWishlist = new this.wishlistModel(wishlist);
+    const wishlistData = {
+      ...wishlist,
+      userId: wishlist.userId, // Manter como string
+    };
+    const createdWishlist = new this.wishlistModel(wishlistData);
     const savedWishlist = await createdWishlist.save();
     return this.toDomain(savedWishlist.toObject());
   }
@@ -31,7 +35,6 @@ export class MongoWishlistRepository implements IWishlistRepository {
   async findByIdWithUser(_id: string): Promise<any> {
     const wishlist = await this.wishlistModel
       .findById(_id)
-      .populate('userId', 'name')
       .lean()
       .exec();
     return wishlist;

@@ -14,8 +14,8 @@ export enum ItemType {
 
 @Schema({ timestamps: true })
 export class Item {
-  @Prop({ type: Types.ObjectId, ref: 'Wishlist', required: true })
-  wishlistId: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  wishlistId: string;
 
   @Prop({ required: true })
   title: string;

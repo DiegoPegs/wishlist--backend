@@ -6,17 +6,17 @@ export type ReservationDocument = Reservation & Document;
 
 @Schema({ timestamps: true })
 export class Reservation {
-  @Prop({ type: Types.ObjectId, ref: 'Item', required: true })
-  itemId: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  itemId: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Wishlist', required: true })
-  wishlistId: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  wishlistId: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  reservedByUserId: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  reservedByUserId: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  wishlistOwnerId: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  wishlistOwnerId: string;
 
   @Prop({ required: true })
   quantity: number;

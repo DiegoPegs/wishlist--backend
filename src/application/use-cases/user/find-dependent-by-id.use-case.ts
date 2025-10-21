@@ -13,8 +13,8 @@ export class FindDependentByIdUseCase {
     dependentId: string,
     requesterId: string,
   ): Promise<User> {
-    // Buscar o dependente
-    const dependent = await this.userRepository.findById(dependentId);
+    // Buscar o dependente (incluindo inativos)
+    const dependent = await this.userRepository.findByIdIncludingInactive(dependentId);
     if (!dependent) {
       throw new NotFoundException('Dependente não encontrado');
     }

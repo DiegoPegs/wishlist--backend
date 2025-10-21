@@ -1,19 +1,26 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
-import { Item } from '../../../domain/entities/item.entity';
-import { Reservation } from '../../../domain/entities/reservation.entity';
-import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
+import { WishlistWithItemsDto } from '../../dtos/wishlist/wishlist-with-items.dto';
 import type { IWishlistRepository } from '../../../domain/repositories/wishlist.repository.interface';
 import type { IItemRepository } from '../../../domain/repositories/item.repository.interface';
 import type { IReservationRepository } from '../../../domain/repositories/reservation.repository.interface';
+import type { IUserRepository } from '../../../domain/repositories/user.repository.interface';
 
 @Injectable()
-export class FindWishlistByIdUseCase {
+export class FindWishlistByIdForGuardianUseCase {
   constructor(
     @Inject('IWishlistRepository')
     private readonly wishlistRepository: IWishlistRepository,
-    @Inject('IItemRepository') private readonly itemRepository: IItemRepository,
+    @Inject('IItemRepository')
+    private readonly itemRepository: IItemRepository,
     @Inject('IReservationRepository')
     private readonly reservationRepository: IReservationRepository,
+    @Inject('IUserRepository')
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async execute(
@@ -27,9 +34,28 @@ export class FindWishlistByIdUseCase {
       throw new NotFoundException('Wishlist not found');
     }
 
-    // Verificar se o usuário é o dono da wishlist
-    if (wishlistWithUser.userId !== requesterId) {
-      throw new NotFoundException('Wishlist not found');
+    // Verificar se o usuário é o dono da wishlist OU um guardião do dependente
+    const isOwner = wishlistWithUser.userId === requesterId;
+
+    if (!isOwner) {
+      // Se não é o dono, verificar se é guardião do dependente
+      const dependent = await this.userRepository.findByIdIncludingInactive(
+        wishlistWithUser.userId
+      );
+
+      if (!dependent) {
+        throw new NotFoundException('Wishlist not found');
+      }
+
+      // Verificar se o requesterId é um dos guardiões do dependente
+      if (
+        !dependent.guardianIds ||
+        !dependent.guardianIds.includes(requesterId)
+      ) {
+        throw new ForbiddenException(
+          'Você não tem permissão para visualizar esta wishlist'
+        );
+      }
     }
 
     // b. Buscar todos os itens associados a essa wishlist
@@ -75,7 +101,7 @@ export class FindWishlistByIdUseCase {
 
     const wishlistWithItems: WishlistWithItemsDto = {
       _id: wishlistWithUser._id.toString(),
-      userId: wishlistWithUser.userId, // Agora contém o objeto do usuário com name
+      userId: wishlistWithUser.userId,
       title: wishlistWithUser.title,
       description: wishlistWithUser.description,
       sharing,
@@ -88,25 +114,32 @@ export class FindWishlistByIdUseCase {
   }
 
   private calculateDisplayStatus(
-    item: Item,
-    reservations: Reservation[],
+    item: any,
+    reservations: any[],
     requesterId: string,
   ): string {
-    // Se não há reservas, o item está disponível
-    if (reservations.length === 0) {
-      return 'AVAILABLE';
+    const totalReserved = reservations.reduce(
+      (sum, reservation) => sum + reservation.quantity,
+      0,
+    );
+
+    if (totalReserved >= item.desiredQuantity) {
+      return 'FULLY_RESERVED';
     }
 
-    // Verificar se o usuário atual já tem uma reserva para este item
+    if (totalReserved > 0) {
+      return 'PARTIALLY_RESERVED';
+    }
+
+    // Verificar se o usuário tem uma reserva neste item
     const userReservation = reservations.find(
       (reservation) => reservation.reservedByUserId.toString() === requesterId,
     );
 
     if (userReservation) {
-      return 'RESERVED_BY_ME';
+      return 'RESERVED_BY_USER';
     }
 
-    // Se há outras reservas, o item está reservado por outros
-    return 'RESERVED_BY_OTHERS';
+    return 'AVAILABLE';
   }
 }

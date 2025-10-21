@@ -13,6 +13,7 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserStatus } from '../enums/statuses.enum';
 import { Language } from '../enums/language.enum';
+import { RelationshipType } from '../enums/relationship.enum';
 
 export class BirthDate {
   @ApiProperty({
@@ -259,10 +260,10 @@ export class User {
 
   @ApiPropertyOptional({
     description: 'Parentesco do dependente com o guardião',
-    example: 'son',
-    enum: ['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'grandson', 'granddaughter', 'other'],
+    example: 'CHILD',
+    enum: RelationshipType,
   })
   @IsOptional()
-  @IsString()
-  relationship?: string;
+  @IsEnum(RelationshipType)
+  relationship?: RelationshipType;
 }

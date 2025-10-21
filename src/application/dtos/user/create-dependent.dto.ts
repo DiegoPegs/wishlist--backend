@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { RelationshipType } from '../../../domain/enums/relationship.enum';
 
 export class BirthDateDto {
   @ApiProperty({
@@ -77,9 +78,9 @@ export class CreateDependentDto {
 
   @ApiProperty({
     description: 'Parentesco com o guardião',
-    example: 'son',
-    enum: ['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'grandson', 'granddaughter', 'other'],
+    example: 'CHILD',
+    enum: RelationshipType,
   })
-  @IsEnum(['son', 'daughter', 'brother', 'sister', 'nephew', 'niece', 'grandson', 'granddaughter', 'other'])
-  relationship: string;
+  @IsEnum(RelationshipType)
+  relationship: RelationshipType;
 }

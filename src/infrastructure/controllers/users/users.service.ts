@@ -5,6 +5,12 @@ import { UpdateLanguageDto } from '../../../application/dtos/user/update-languag
 import { CreateDependentDto } from '../../../application/dtos/user/create-dependent.dto';
 import { AddGuardianDto } from '../../../application/dtos/user/add-guardian.dto';
 import { CreateDependentWishlistDto } from '../../../application/dtos/wishlist/create-dependent-wishlist.dto';
+import { UpdateWishlistSharingDto } from '../../../application/dtos/wishlist/update-wishlist-sharing.dto';
+import { UpdateWishlistDto } from '../../../application/dtos/wishlist/update-wishlist.dto';
+import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
+import { UpdateItemMetadataDto } from '../../../application/dtos/item/update-item-metadata.dto';
+import { MarkAsReceivedDto } from '../../../application/dtos/item/mark-as-received.dto';
+import { UpdateItemQuantityDto } from '../../../application/dtos/item/update-item-quantity.dto';
 import { GetCurrentUserUseCase } from '../../../application/use-cases/auth/get-current-user.use-case';
 import { UpdateGiftingProfileUseCase } from '../../../application/use-cases/user/update-gifting-profile.use-case';
 import { UpdateProfileUseCase } from '../../../application/use-cases/user/update-profile.use-case';
@@ -22,10 +28,23 @@ import { FindDependentByIdUseCase } from '../../../application/use-cases/user/fi
 import { FindDependentWishlistsUseCase } from '../../../application/use-cases/user/find-dependent-wishlists.use-case';
 import { GetDependentWishlistsUseCase } from '../../../application/use-cases/wishlist/get-dependent-wishlists.use-case';
 import { CreateDependentWishlistUseCase } from '../../../application/use-cases/wishlist/create-dependent-wishlist.use-case';
+import { UpdateDependentWishlistSharingUseCase } from '../../../application/use-cases/wishlist/update-dependent-wishlist-sharing.use-case';
+import { FindDependentWishlistByIdUseCase } from '../../../application/use-cases/wishlist/find-dependent-wishlist-by-id.use-case';
+import { SoftDeleteDependentWishlistUseCase } from '../../../application/use-cases/wishlist/soft-delete-dependent-wishlist.use-case';
+import { HardDeleteDependentWishlistUseCase } from '../../../application/use-cases/wishlist/hard-delete-dependent-wishlist.use-case';
+import { RestoreDependentWishlistUseCase } from '../../../application/use-cases/wishlist/restore-dependent-wishlist.use-case';
+import { UpdateDependentWishlistUseCase } from '../../../application/use-cases/wishlist/update-dependent-wishlist.use-case';
+import { CreateDependentItemUseCase } from '../../../application/use-cases/item/create-dependent-item.use-case';
+import { DeleteDependentItemUseCase } from '../../../application/use-cases/item/delete-dependent-item.use-case';
+import { UpdateDependentItemMetadataUseCase } from '../../../application/use-cases/item/update-dependent-item-metadata.use-case';
+import { MarkDependentItemAsReceivedUseCase } from '../../../application/use-cases/item/mark-dependent-item-as-received.use-case';
+import { UpdateDependentItemQuantityUseCase } from '../../../application/use-cases/item/update-dependent-item-quantity.use-case';
 import { RemoveGuardianshipUseCase } from '../../../application/use-cases/user/remove-guardianship.use-case';
 import { User } from '../../../domain/entities/user.entity';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
+import { Item } from '../../../domain/entities/item.entity';
 import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
+import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
 import type { IUserRepository } from '../../../domain/repositories/user.repository.interface';
 
 @Injectable()
@@ -48,6 +67,17 @@ export class UsersService {
           private readonly findDependentWishlistsUseCase: FindDependentWishlistsUseCase,
           private readonly getDependentWishlistsUseCase: GetDependentWishlistsUseCase,
     private readonly createDependentWishlistUseCase: CreateDependentWishlistUseCase,
+    private readonly updateDependentWishlistSharingUseCase: UpdateDependentWishlistSharingUseCase,
+    private readonly findDependentWishlistByIdUseCase: FindDependentWishlistByIdUseCase,
+    private readonly softDeleteDependentWishlistUseCase: SoftDeleteDependentWishlistUseCase,
+    private readonly hardDeleteDependentWishlistUseCase: HardDeleteDependentWishlistUseCase,
+    private readonly restoreDependentWishlistUseCase: RestoreDependentWishlistUseCase,
+    private readonly updateDependentWishlistUseCase: UpdateDependentWishlistUseCase,
+    private readonly createDependentItemUseCase: CreateDependentItemUseCase,
+    private readonly deleteDependentItemUseCase: DeleteDependentItemUseCase,
+    private readonly updateDependentItemMetadataUseCase: UpdateDependentItemMetadataUseCase,
+    private readonly markDependentItemAsReceivedUseCase: MarkDependentItemAsReceivedUseCase,
+    private readonly updateDependentItemQuantityUseCase: UpdateDependentItemQuantityUseCase,
     private readonly removeGuardianshipUseCase: RemoveGuardianshipUseCase,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
   ) {}
@@ -194,12 +224,12 @@ export class UsersService {
   }
 
   async permanentlyDeleteDependent(
-    _dependentId: string,
-    _requesterId: string,
+    requestingUserId: string,
+    dependentId: string,
   ): Promise<{ message: string }> {
     return await this.permanentlyDeleteDependentUseCase.execute(
-      _dependentId,
-      _requesterId,
+      requestingUserId,
+      dependentId,
     );
   }
 
@@ -261,6 +291,156 @@ export class UsersService {
   ): Promise<void> {
     return await this.removeGuardianshipUseCase.execute(
       dependentId,
+      requesterId,
+    );
+  }
+
+  async updateDependentWishlistSharing(
+    dependentId: string,
+    wishlistId: string,
+    updateWishlistSharingDto: UpdateWishlistSharingDto,
+    requesterId: string,
+  ): Promise<{
+    isPublic: boolean;
+    publicLinkToken?: string;
+    publicUrl?: string;
+  }> {
+    return await this.updateDependentWishlistSharingUseCase.execute(
+      dependentId,
+      wishlistId,
+      updateWishlistSharingDto,
+      requesterId,
+    );
+  }
+
+  async findDependentWishlistById(
+    dependentId: string,
+    wishlistId: string,
+    requesterId: string,
+  ): Promise<WishlistWithItemsDto> {
+    return await this.findDependentWishlistByIdUseCase.execute(
+      dependentId,
+      wishlistId,
+      requesterId,
+    );
+  }
+
+  // Wishlist operations for dependents
+  async softDeleteDependentWishlist(
+    dependentId: string,
+    wishlistId: string,
+    requesterId: string,
+  ): Promise<{ message: string }> {
+    return await this.softDeleteDependentWishlistUseCase.execute(
+      dependentId,
+      wishlistId,
+      requesterId,
+    );
+  }
+
+  async hardDeleteDependentWishlist(
+    dependentId: string,
+    wishlistId: string,
+    requesterId: string,
+  ): Promise<{ message: string }> {
+    return await this.hardDeleteDependentWishlistUseCase.execute(
+      dependentId,
+      wishlistId,
+      requesterId,
+    );
+  }
+
+  async restoreDependentWishlist(
+    dependentId: string,
+    wishlistId: string,
+    requesterId: string,
+  ): Promise<{ message: string }> {
+    return await this.restoreDependentWishlistUseCase.execute(
+      dependentId,
+      wishlistId,
+      requesterId,
+    );
+  }
+
+  async updateDependentWishlist(
+    dependentId: string,
+    wishlistId: string,
+    updateWishlistDto: UpdateWishlistDto,
+    requesterId: string,
+  ): Promise<Wishlist> {
+    return await this.updateDependentWishlistUseCase.execute(
+      dependentId,
+      wishlistId,
+      updateWishlistDto,
+      requesterId,
+    );
+  }
+
+  // Item operations for dependents
+  async createDependentItem(
+    dependentId: string,
+    wishlistId: string,
+    createItemDto: CreateItemDto,
+    requesterId: string,
+  ): Promise<Item> {
+    return await this.createDependentItemUseCase.execute(
+      dependentId,
+      wishlistId,
+      createItemDto,
+      requesterId,
+    );
+  }
+
+  async deleteDependentItem(
+    dependentId: string,
+    itemId: string,
+    requesterId: string,
+  ): Promise<{ message: string }> {
+    return await this.deleteDependentItemUseCase.execute(
+      dependentId,
+      itemId,
+      requesterId,
+    );
+  }
+
+  async updateDependentItemMetadata(
+    dependentId: string,
+    itemId: string,
+    updateItemMetadataDto: UpdateItemMetadataDto,
+    requesterId: string,
+  ): Promise<Item> {
+    return await this.updateDependentItemMetadataUseCase.execute(
+      dependentId,
+      itemId,
+      updateItemMetadataDto,
+      requesterId,
+    );
+  }
+
+  async markDependentItemAsReceived(
+    dependentId: string,
+    itemId: string,
+    markAsReceivedDto: MarkAsReceivedDto,
+    requesterId: string,
+  ): Promise<Item> {
+    return await this.markDependentItemAsReceivedUseCase.execute(
+      dependentId,
+      itemId,
+      markAsReceivedDto,
+      requesterId,
+    );
+  }
+
+  async updateDependentItemQuantity(
+    dependentId: string,
+    itemId: string,
+    updateItemQuantityDto: UpdateItemQuantityDto,
+    requesterId: string,
+  ): Promise<Item> {
+    return await this.updateDependentItemQuantityUseCase.execute(
+      dependentId,
+      itemId,
+      updateItemQuantityDto,
       requesterId,
     );
   }

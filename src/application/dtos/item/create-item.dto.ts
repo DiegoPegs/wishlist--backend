@@ -8,6 +8,7 @@ import {
   IsString,
   IsUrl,
   ValidateNested,
+  ValidateIf,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ItemType } from '../../../domain/entities/item.entity';
@@ -82,6 +83,7 @@ export class CreateItemDto {
     type: 'string',
   })
   @IsOptional()
+  @ValidateIf((o) => o.link && o.link.trim() !== '')
   @IsUrl()
   link?: string;
 
@@ -91,6 +93,7 @@ export class CreateItemDto {
     type: 'string',
   })
   @IsOptional()
+  @ValidateIf((o) => o.imageUrl && o.imageUrl.trim() !== '')
   @IsUrl()
   imageUrl?: string;
 

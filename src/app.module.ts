@@ -14,6 +14,7 @@ import { ReservationsModule } from './infrastructure/controllers/reservations/re
 import { ConversationsModule } from './infrastructure/controllers/conversations/conversations.module';
 import { PublicModule } from './infrastructure/controllers/public/public.module';
 import { InvitationsModule } from './infrastructure/controllers/invitations/invitations.module';
+import { NotificationsModule } from './infrastructure/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { InvitationsModule } from './infrastructure/controllers/invitations/invi
     ConversationsModule,
     PublicModule,
     InvitationsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

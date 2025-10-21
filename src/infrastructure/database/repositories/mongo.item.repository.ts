@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Item as ItemSchema, ItemDocument } from '../schemas/item.schema';
 import { Item } from '../../../domain/entities/item.entity';
 import { IItemRepository } from '../../../domain/repositories/item.repository.interface';
@@ -14,7 +14,11 @@ export class MongoItemRepository implements IItemRepository {
   ) {}
 
   async create(item: Item): Promise<Item> {
-    const createdItem = new this.itemModel(item);
+    const itemData = {
+      ...item,
+      wishlistId: item.wishlistId, // Manter como string
+    };
+    const createdItem = new this.itemModel(itemData);
     const savedItem = await createdItem.save();
     return this.toDomain(savedItem.toObject());
   }

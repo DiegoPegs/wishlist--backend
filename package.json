@@ -28,6 +28,7 @@
     "test:config": "ts-node scripts/test-all.ts",
     "test:cognito": "ts-node scripts/test-cognito.ts",
     "test:email": "ts-node scripts/test-email.ts",
+    "migrate:relationship": "node scripts/migrate-relationship-values.js",
     "test:ssm": "cross-env AWS_PROFILE=kero-wishlist ts-node scripts/test-ssm.ts",
     "test:ssm-force": "cross-env AWS_PROFILE=kero-wishlist NODE_ENV=production ts-node scripts/test-ssm.ts",
     "test:aws": "cross-env AWS_PROFILE=kero-wishlist ts-node scripts/test-aws-connection.ts"

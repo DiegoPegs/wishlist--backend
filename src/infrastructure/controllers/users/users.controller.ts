@@ -4,6 +4,7 @@ import {
   Put,
   Post,
   Delete,
+  Patch,
   Body,
   Param,
   Query,
@@ -36,11 +37,19 @@ import { UpdateLanguageDto } from '../../../application/dtos/user/update-languag
 import { CreateDependentDto } from '../../../application/dtos/user/create-dependent.dto';
 import { AddGuardianDto } from '../../../application/dtos/user/add-guardian.dto';
 import { CreateDependentWishlistDto } from '../../../application/dtos/wishlist/create-dependent-wishlist.dto';
+import { UpdateWishlistSharingDto } from '../../../application/dtos/wishlist/update-wishlist-sharing.dto';
 import { UsersService } from './users.service';
 import { GetUser } from './get-user.decorator';
 import { User } from '../../../domain/entities/user.entity';
 import { Wishlist } from '../../../domain/entities/wishlist.entity';
 import { WishlistWithItemsResponseDto } from '../../../application/dtos/wishlist/wishlist-with-items-response.dto';
+import { WishlistWithItemsDto } from '../../../application/dtos/wishlist/wishlist-with-items.dto';
+import { UpdateWishlistDto } from '../../../application/dtos/wishlist/update-wishlist.dto';
+import { CreateItemDto } from '../../../application/dtos/item/create-item.dto';
+import { UpdateItemMetadataDto } from '../../../application/dtos/item/update-item-metadata.dto';
+import { MarkAsReceivedDto } from '../../../application/dtos/item/mark-as-received.dto';
+import { UpdateItemQuantityDto } from '../../../application/dtos/item/update-item-quantity.dto';
+import { Item } from '../../../domain/entities/item.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Users')
@@ -366,6 +375,53 @@ export class UsersController {
     );
   }
 
+  @Get('dependents/:dependentId/wishlists/:wishlistId')
+  @ApiOperation({
+    summary: 'Buscar wishlist específica de um dependente',
+    description:
+      'Retorna uma wishlist específica de um dependente com todos os seus itens e status de reserva. Apenas guardiões autorizados podem visualizar.',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'wishlistId',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439012',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Wishlist do dependente obtida com sucesso',
+    type: WishlistWithItemsDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou wishlist não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description:
+      'Usuário não tem permissão para visualizar wishlists deste dependente',
+  })
+  async findDependentWishlistById(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('wishlistId', ParseMongoIdPipe) wishlistId: string,
+    @GetUser() user: User,
+  ): Promise<WishlistWithItemsDto> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.findDependentWishlistById(
+      dependentId,
+      wishlistId,
+      user._id.toString(),
+    );
+  }
+
   @Post('dependents/:dependentId/wishlists')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
@@ -411,6 +467,83 @@ export class UsersController {
     return await this.usersService.createDependentWishlist(
       createDependentWishlistDto,
       dependentId,
+      user._id.toString(),
+    );
+  }
+
+  @Put('dependents/:dependentId/wishlists/:wishlistId/sharing')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Atualizar compartilhamento de wishlist de dependente',
+    description:
+      'Permite que um guardião atualize as configurações de compartilhamento de uma wishlist de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'wishlistId',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439012',
+    type: 'string',
+  })
+  @ApiBody({
+    type: UpdateWishlistSharingDto,
+    description: 'Configurações de compartilhamento da wishlist',
+  })
+  @ApiOkResponse({
+    description: 'Compartilhamento atualizado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        isPublic: {
+          type: 'boolean',
+          example: true,
+        },
+        publicLinkToken: {
+          type: 'string',
+          example: 'abc123def456',
+        },
+        publicUrl: {
+          type: 'string',
+          example: 'http://localhost:3001/public/abc123def456',
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Dados inválidos fornecidos',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou wishlist não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description:
+      'Usuário não tem permissão para alterar wishlists deste dependente',
+  })
+  async updateDependentWishlistSharing(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('wishlistId', ParseMongoIdPipe) wishlistId: string,
+    @Body() updateWishlistSharingDto: UpdateWishlistSharingDto,
+    @GetUser() user: User,
+  ): Promise<{
+    isPublic: boolean;
+    publicLinkToken?: string;
+    publicUrl?: string;
+  }> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.updateDependentWishlistSharing(
+      dependentId,
+      wishlistId,
+      updateWishlistSharingDto,
       user._id.toString(),
     );
   }
@@ -592,7 +725,7 @@ export class UsersController {
     if (!user._id) {
       throw new Error('User ID not found');
     }
-    await this.usersService.permanentlyDeleteDependent(dependentId, user._id);
+    await this.usersService.permanentlyDeleteDependent(user._id, dependentId);
   }
 
   @Post(':username/follow')
@@ -793,5 +926,483 @@ export class UsersController {
   })
   async getUserByUsername(@Param('username') username: string): Promise<User> {
     return await this.usersService.getUserByUsername(username);
+  }
+
+  // Wishlist operations for dependents
+  @Delete('dependents/:dependentId/wishlists/:wishlistId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Arquivar wishlist de dependente',
+    description: 'Permite que um guardião arquive uma wishlist de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'wishlistId',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439012',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Wishlist arquivada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Wishlist arquivada com sucesso',
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou wishlist não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para arquivar wishlists deste dependente',
+  })
+  async softDeleteDependentWishlist(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('wishlistId', ParseMongoIdPipe) wishlistId: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.softDeleteDependentWishlist(
+      dependentId,
+      wishlistId,
+      user._id.toString(),
+    );
+  }
+
+  @Delete('dependents/:dependentId/wishlists/:wishlistId/permanent')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Excluir permanentemente wishlist de dependente',
+    description: 'Permite que um guardião exclua permanentemente uma wishlist de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'wishlistId',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439012',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Wishlist excluída permanentemente',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Wishlist excluída permanentemente',
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou wishlist não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para excluir wishlists deste dependente',
+  })
+  async hardDeleteDependentWishlist(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('wishlistId', ParseMongoIdPipe) wishlistId: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.hardDeleteDependentWishlist(
+      dependentId,
+      wishlistId,
+      user._id.toString(),
+    );
+  }
+
+  @Post('dependents/:dependentId/wishlists/:wishlistId/restore')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Restaurar wishlist de dependente',
+    description: 'Permite que um guardião restaure uma wishlist arquivada de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'wishlistId',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439012',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Wishlist restaurada com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Wishlist restaurada com sucesso',
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou wishlist não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para restaurar wishlists deste dependente',
+  })
+  async restoreDependentWishlist(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('wishlistId', ParseMongoIdPipe) wishlistId: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.restoreDependentWishlist(
+      dependentId,
+      wishlistId,
+      user._id.toString(),
+    );
+  }
+
+  @Put('dependents/:dependentId/wishlists/:wishlistId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Atualizar wishlist de dependente',
+    description: 'Permite que um guardião atualize uma wishlist de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'wishlistId',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439012',
+    type: 'string',
+  })
+  @ApiBody({
+    type: UpdateWishlistDto,
+    description: 'Dados para atualização da wishlist',
+  })
+  @ApiOkResponse({
+    description: 'Wishlist atualizada com sucesso',
+    type: Wishlist,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou wishlist não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para atualizar wishlists deste dependente',
+  })
+  async updateDependentWishlist(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('wishlistId', ParseMongoIdPipe) wishlistId: string,
+    @Body() updateWishlistDto: UpdateWishlistDto,
+    @GetUser() user: User,
+  ): Promise<Wishlist> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.updateDependentWishlist(
+      dependentId,
+      wishlistId,
+      updateWishlistDto,
+      user._id.toString(),
+    );
+  }
+
+  // Item operations for dependents
+  @Post('dependents/:dependentId/wishlists/:wishlistId/items')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Criar item em wishlist de dependente',
+    description: 'Permite que um guardião crie um item em uma wishlist de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'wishlistId',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439012',
+    type: 'string',
+  })
+  @ApiBody({
+    type: CreateItemDto,
+    description: 'Dados do item a ser criado',
+  })
+  @ApiCreatedResponse({
+    description: 'Item criado com sucesso',
+    type: Item,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou wishlist não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para criar itens para este dependente',
+  })
+  async createDependentItem(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('wishlistId', ParseMongoIdPipe) wishlistId: string,
+    @Body() createItemDto: CreateItemDto,
+    @GetUser() user: User,
+  ): Promise<Item> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.createDependentItem(
+      dependentId,
+      wishlistId,
+      createItemDto,
+      user._id.toString(),
+    );
+  }
+
+  @Delete('dependents/:dependentId/items/:itemId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Excluir item de dependente',
+    description: 'Permite que um guardião exclua um item de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID do item',
+    example: '507f1f77bcf86cd799439013',
+    type: 'string',
+  })
+  @ApiOkResponse({
+    description: 'Item excluído com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Item excluído com sucesso',
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou item não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para excluir itens deste dependente',
+  })
+  async deleteDependentItem(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('itemId', ParseMongoIdPipe) itemId: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.deleteDependentItem(
+      dependentId,
+      itemId,
+      user._id.toString(),
+    );
+  }
+
+  @Put('dependents/:dependentId/items/:itemId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Atualizar metadados de item de dependente',
+    description: 'Permite que um guardião atualize os metadados de um item de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID do item',
+    example: '507f1f77bcf86cd799439013',
+    type: 'string',
+  })
+  @ApiBody({
+    type: UpdateItemMetadataDto,
+    description: 'Dados para atualização do item',
+  })
+  @ApiOkResponse({
+    description: 'Item atualizado com sucesso',
+    type: Item,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou item não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para atualizar itens deste dependente',
+  })
+  async updateDependentItemMetadata(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('itemId', ParseMongoIdPipe) itemId: string,
+    @Body() updateItemMetadataDto: UpdateItemMetadataDto,
+    @GetUser() user: User,
+  ): Promise<Item> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.updateDependentItemMetadata(
+      dependentId,
+      itemId,
+      updateItemMetadataDto,
+      user._id.toString(),
+    );
+  }
+
+  @Post('dependents/:dependentId/items/:itemId/mark-as-received')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Marcar item de dependente como recebido',
+    description: 'Permite que um guardião marque um item de seu dependente como recebido',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID do item',
+    example: '507f1f77bcf86cd799439013',
+    type: 'string',
+  })
+  @ApiBody({
+    type: MarkAsReceivedDto,
+    description: 'Dados para marcar como recebido',
+  })
+  @ApiOkResponse({
+    description: 'Item marcado como recebido com sucesso',
+    type: Item,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou item não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para marcar itens como recebidos deste dependente',
+  })
+  async markDependentItemAsReceived(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('itemId', ParseMongoIdPipe) itemId: string,
+    @Body() markAsReceivedDto: MarkAsReceivedDto,
+    @GetUser() user: User,
+  ): Promise<Item> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.markDependentItemAsReceived(
+      dependentId,
+      itemId,
+      markAsReceivedDto,
+      user._id.toString(),
+    );
+  }
+
+  @Patch('dependents/:dependentId/items/:itemId/quantity')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Atualizar quantidade de item de dependente',
+    description: 'Permite que um guardião atualize a quantidade desejada de um item de seu dependente',
+  })
+  @ApiParam({
+    name: 'dependentId',
+    description: 'ID do dependente',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'itemId',
+    description: 'ID do item',
+    example: '507f1f77bcf86cd799439013',
+    type: 'string',
+  })
+  @ApiBody({
+    type: UpdateItemQuantityDto,
+    description: 'Nova quantidade desejada',
+  })
+  @ApiOkResponse({
+    description: 'Quantidade atualizada com sucesso',
+    type: Item,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token JWT inválido ou expirado',
+  })
+  @ApiNotFoundResponse({
+    description: 'Dependente ou item não encontrado',
+  })
+  @ApiForbiddenResponse({
+    description: 'Usuário não tem permissão para atualizar quantidades de itens deste dependente',
+  })
+  async updateDependentItemQuantity(
+    @Param('dependentId', ParseMongoIdPipe) dependentId: string,
+    @Param('itemId', ParseMongoIdPipe) itemId: string,
+    @Body() updateItemQuantityDto: UpdateItemQuantityDto,
+    @GetUser() user: User,
+  ): Promise<Item> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.usersService.updateDependentItemQuantity(
+      dependentId,
+      itemId,
+      updateItemQuantityDto,
+      user._id.toString(),
+    );
   }
 }

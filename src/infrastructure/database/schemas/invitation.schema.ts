@@ -18,11 +18,10 @@ export class Invitation {
   invitationType: InvitationType;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   })
-  inviterId: Types.ObjectId;
+  inviterId: string;
 
   @Prop({
     type: String,
@@ -33,8 +32,7 @@ export class Invitation {
   @Prop({
     type: {
       dependentId: {
-        type: Types.ObjectId,
-        ref: 'User',
+        type: String,
         required: true,
       },
     },
@@ -42,7 +40,7 @@ export class Invitation {
     _id: false,
   })
   context: {
-    dependentId: Types.ObjectId;
+    dependentId: string;
   };
 
   @Prop({

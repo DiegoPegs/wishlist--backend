@@ -16,10 +16,22 @@ import { DeactivateDependentUseCase } from '../../../application/use-cases/depen
 import { RestoreDependentUseCase } from '../../../application/use-cases/dependent/restore-dependent.use-case';
 import { PermanentlyDeleteDependentUseCase } from '../../../application/use-cases/dependent/permanently-delete-dependent.use-case';
 import { FindDependentsByGuardianUseCase } from '../../../application/use-cases/dependent/find-dependents-by-guardian.use-case';
+import { CreateNotificationUseCase } from '../../../application/use-cases/notification/create-notification.use-case';
 import { FindDependentByIdUseCase } from '../../../application/use-cases/user/find-dependent-by-id.use-case';
 import { FindDependentWishlistsUseCase } from '../../../application/use-cases/user/find-dependent-wishlists.use-case';
 import { GetDependentWishlistsUseCase } from '../../../application/use-cases/wishlist/get-dependent-wishlists.use-case';
 import { CreateDependentWishlistUseCase } from '../../../application/use-cases/wishlist/create-dependent-wishlist.use-case';
+import { UpdateDependentWishlistSharingUseCase } from '../../../application/use-cases/wishlist/update-dependent-wishlist-sharing.use-case';
+import { FindDependentWishlistByIdUseCase } from '../../../application/use-cases/wishlist/find-dependent-wishlist-by-id.use-case';
+import { SoftDeleteDependentWishlistUseCase } from '../../../application/use-cases/wishlist/soft-delete-dependent-wishlist.use-case';
+import { HardDeleteDependentWishlistUseCase } from '../../../application/use-cases/wishlist/hard-delete-dependent-wishlist.use-case';
+import { RestoreDependentWishlistUseCase } from '../../../application/use-cases/wishlist/restore-dependent-wishlist.use-case';
+import { UpdateDependentWishlistUseCase } from '../../../application/use-cases/wishlist/update-dependent-wishlist.use-case';
+import { CreateDependentItemUseCase } from '../../../application/use-cases/item/create-dependent-item.use-case';
+import { DeleteDependentItemUseCase } from '../../../application/use-cases/item/delete-dependent-item.use-case';
+import { UpdateDependentItemMetadataUseCase } from '../../../application/use-cases/item/update-dependent-item-metadata.use-case';
+import { MarkDependentItemAsReceivedUseCase } from '../../../application/use-cases/item/mark-dependent-item-as-received.use-case';
+import { UpdateDependentItemQuantityUseCase } from '../../../application/use-cases/item/update-dependent-item-quantity.use-case';
 import { RemoveGuardianshipUseCase } from '../../../application/use-cases/user/remove-guardianship.use-case';
 import { MongoUserRepository } from '../../database/repositories/mongo.user.repository';
 import { MongoInvitationRepository } from '../../database/repositories/mongo.invitation.repository';
@@ -50,6 +62,7 @@ import { Message, MessageSchema } from '../../database/schemas/message.schema';
 import { EmailService } from '../../services/email.service';
 import { CognitoService } from '../../services/cognito.service';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationsModule } from '../../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -63,6 +76,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: Message.name, schema: MessageSchema },
     ]),
     AuthModule,
+    NotificationsModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -80,11 +94,23 @@ import { AuthModule } from '../auth/auth.module';
     DeactivateDependentUseCase,
     RestoreDependentUseCase,
     PermanentlyDeleteDependentUseCase,
-          FindDependentsByGuardianUseCase,
+    FindDependentsByGuardianUseCase,
+    CreateNotificationUseCase,
           FindDependentByIdUseCase,
           FindDependentWishlistsUseCase,
           GetDependentWishlistsUseCase,
     CreateDependentWishlistUseCase,
+    UpdateDependentWishlistSharingUseCase,
+    FindDependentWishlistByIdUseCase,
+    SoftDeleteDependentWishlistUseCase,
+    HardDeleteDependentWishlistUseCase,
+    RestoreDependentWishlistUseCase,
+    UpdateDependentWishlistUseCase,
+    CreateDependentItemUseCase,
+    DeleteDependentItemUseCase,
+    UpdateDependentItemMetadataUseCase,
+    MarkDependentItemAsReceivedUseCase,
+    UpdateDependentItemQuantityUseCase,
     RemoveGuardianshipUseCase,
     {
       provide: 'IUserRepository',

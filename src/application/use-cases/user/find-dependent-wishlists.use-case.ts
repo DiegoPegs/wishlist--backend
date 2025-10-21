@@ -16,8 +16,8 @@ export class FindDependentWishlistsUseCase {
     dependentId: string,
     requesterId: string,
   ): Promise<Wishlist[]> {
-    // Buscar o dependente para validar permissões
-    const dependent = await this.userRepository.findById(dependentId);
+    // Buscar o dependente para validar permissões (incluindo inativos)
+    const dependent = await this.userRepository.findByIdIncludingInactive(dependentId);
     if (!dependent) {
       throw new NotFoundException('Dependente não encontrado');
     }

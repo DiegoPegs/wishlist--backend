@@ -4,3 +4,4 @@ export * from './mongo.item.repository';
 export * from './mongo.reservation.repository';
 export * from './mongo.conversation.repository';
 export * from './mongo.message.repository';
+export * from './mongo.notification.repository';

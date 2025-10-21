@@ -33,11 +33,11 @@ export class MongoUserRepository implements IUserRepository {
       isDependent: user.isDependent,
       status: user.status || UserStatus.ACTIVE,
       language: user.language,
-      guardianIds: (user.guardianIds || []).map((id) => new Types.ObjectId(id)),
-      dependents: (user.dependents || []).map((id) => new Types.ObjectId(id)),
+      guardianIds: user.guardianIds || [], // Manter como string[]
+      dependents: user.dependents || [], // Manter como string[]
       giftingProfile: user.giftingProfile || {},
-      followers: (user.followers || []).map((id) => new Types.ObjectId(id)),
-      following: (user.following || []).map((id) => new Types.ObjectId(id)),
+      followers: user.followers || [], // Manter como string[]
+      following: user.following || [], // Manter como string[]
     };
 
     // Apenas adicionar credenciais se não for dependente

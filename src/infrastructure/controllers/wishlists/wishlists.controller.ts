@@ -142,6 +142,68 @@ export class WishlistsController {
     return await this.wishlistsService.getUserWishlists(user._id.toString());
   }
 
+  @Get('following')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Listar wishlists dos usuários seguidos',
+    description:
+      'Retorna todas as wishlists públicas dos usuários que o usuário autenticado segue. Se o usuário não segue ninguém ou nenhuma das pessoas seguidas possui wishlists públicas, retorna um array vazio.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de wishlists públicas dos usuários seguidos (pode ser um array vazio)',
+    type: [WishlistWithItemsResponseDto],
+    isArray: true,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
+  })
+  async getFollowingWishlists(
+    @GetUser() user: User,
+  ): Promise<WishlistWithItemsResponseDto[]> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.wishlistsService.getFollowingWishlists(
+      user._id.toString(),
+    );
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Buscar wishlist por ID com itens',
+    description:
+      'Retorna uma wishlist específica com todos os seus itens e status de reserva',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID da wishlist',
+    example: '507f1f77bcf86cd799439011',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Wishlist encontrada com sucesso',
+    type: WishlistWithItemsDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Wishlist não encontrada',
+  })
+  async getWishlistById(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @GetUser() user: User,
+  ): Promise<WishlistWithItemsDto> {
+    if (!user._id) {
+      throw new Error('User ID not found');
+    }
+    return await this.wishlistsService.findWishlistByIdWithItems(
+      id,
+      user._id.toString(),
+    );
+  }
+
   @UseGuards(JwtAuthGuard)
   @Patch(':id/sharing')
   @HttpCode(HttpStatus.OK)
@@ -213,40 +275,6 @@ export class WishlistsController {
     return await this.wishlistsService.updateWishlistSharing(
       wishlistId,
       updateWishlistSharingDto,
-      user._id.toString(),
-    );
-  }
-
-  @Get(':id')
-  @ApiOperation({
-    summary: 'Buscar wishlist por ID com itens',
-    description:
-      'Retorna uma wishlist específica com todos os seus itens e status de reserva',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'ID da wishlist',
-    example: '507f1f77bcf86cd799439011',
-    type: 'string',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Wishlist encontrada com sucesso',
-    type: WishlistWithItemsDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Wishlist não encontrada',
-  })
-  async getWishlistById(
-    @Param('id', ParseMongoIdPipe) id: string,
-    @GetUser() user: User,
-  ): Promise<WishlistWithItemsDto> {
-    if (!user._id) {
-      throw new Error('User ID not found');
-    }
-    return await this.wishlistsService.findWishlistByIdWithItems(
-      id,
       user._id.toString(),
     );
   }

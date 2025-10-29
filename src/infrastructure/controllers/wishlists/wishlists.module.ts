@@ -14,6 +14,7 @@ import { PurgeArchivedWishlistsUseCase } from '../../../application/use-cases/wi
 import { UpdateWishlistSharingUseCase } from '../../../application/use-cases/wishlist/update-wishlist-sharing.use-case';
 import { UpdateWishlistUseCase } from '../../../application/use-cases/wishlist/update-wishlist.use-case';
 import { ConvertWishlistToDtoUseCase } from '../../../application/use-cases/wishlist/convert-wishlist-to-dto.use-case';
+import { GetFollowingWishlistsUseCase } from '../../../application/use-cases/wishlist/get-following-wishlists.use-case';
 import { CreateItemUseCase } from '../../../application/use-cases/item/create-item.use-case';
 import { MongoWishlistRepository } from '../../database/repositories/mongo.wishlist.repository';
 import { MongoItemRepository } from '../../database/repositories/mongo.item.repository';
@@ -53,6 +54,7 @@ import { User, UserSchema } from '../../database/schemas/user.schema';
     WishlistsService,
     CreateWishlistUseCase,
     GetUserWishlistsUseCase,
+    GetFollowingWishlistsUseCase,
     GetWishlistByIdUseCase,
     FindWishlistByIdUseCase,
     FindWishlistByIdForGuardianUseCase,

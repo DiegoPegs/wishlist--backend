@@ -48,6 +48,19 @@ export class MongoWishlistRepository implements IWishlistRepository {
     return wishlists.map((wishlist) => this.toDomain(wishlist as any));
   }
 
+  async findByUserIdsAndIsPublic(_userIds: string[]): Promise<Wishlist[]> {
+    const wishlists = await this.wishlistModel
+      .find({
+        userId: { $in: _userIds },
+        'sharing.isPublic': true,
+        status: WishlistStatus.ACTIVE,
+      })
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+    return wishlists.map((wishlist) => this.toDomain(wishlist as any));
+  }
+
   async findByPublicLinkToken(
     _publicLinkToken: string,
   ): Promise<Wishlist | null> {
@@ -84,13 +97,16 @@ export class MongoWishlistRepository implements IWishlistRepository {
 
   private toDomain(wishlistDocument: WishlistDocument): Wishlist {
     const wishlist = new Wishlist();
-    wishlist._id = safeToString(wishlistDocument._id);
-    wishlist.userId = safeToString(wishlistDocument.userId);
-    wishlist.title = wishlistDocument.title;
-    wishlist.description = wishlistDocument.description;
-    wishlist.sharing = wishlistDocument.sharing;
-    wishlist.status = wishlistDocument.status;
-    wishlist.archivedAt = wishlistDocument.archivedAt;
+    const doc = wishlistDocument as any;
+    wishlist._id = safeToString(doc._id);
+    wishlist.userId = safeToString(doc.userId);
+    wishlist.title = doc.title;
+    wishlist.description = doc.description;
+    wishlist.sharing = doc.sharing;
+    wishlist.status = doc.status;
+    wishlist.archivedAt = doc.archivedAt;
+    wishlist.createdAt = doc.createdAt;
+    wishlist.updatedAt = doc.updatedAt;
     return wishlist;
   }
 }

@@ -5,6 +5,7 @@ export interface IWishlistRepository {
   findById(_id: string): Promise<Wishlist | null>;
   findByIdWithUser(_id: string): Promise<any>;
   findByUserId(_userId: string): Promise<Wishlist[]>;
+  findByUserIdsAndIsPublic(_userIds: string[]): Promise<Wishlist[]>;
   findByPublicLinkToken(_publicLinkToken: string): Promise<Wishlist | null>;
   findArchivedBefore(date: Date): Promise<Wishlist[]>;
   update(_id: string, data: Partial<Wishlist>): Promise<Wishlist | null>;

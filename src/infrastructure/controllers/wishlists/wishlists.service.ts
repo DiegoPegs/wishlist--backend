@@ -5,6 +5,7 @@ import { UpdateWishlistSharingDto } from '../../../application/dtos/wishlist/upd
 import { UpdateWishlistDto } from '../../../application/dtos/wishlist/update-wishlist.dto';
 import { CreateWishlistUseCase } from '../../../application/use-cases/wishlist/create-wishlist.use-case';
 import { GetUserWishlistsUseCase } from '../../../application/use-cases/wishlist/get-user-wishlists.use-case';
+import { GetFollowingWishlistsUseCase } from '../../../application/use-cases/wishlist/get-following-wishlists.use-case';
 import { GetWishlistByIdUseCase } from '../../../application/use-cases/wishlist/get-wishlist-by-id.use-case';
 import { FindWishlistByIdUseCase } from '../../../application/use-cases/wishlist/find-wishlist-by-id.use-case';
 import { FindWishlistByIdForGuardianUseCase } from '../../../application/use-cases/wishlist/find-wishlist-by-id-for-guardian.use-case';
@@ -25,6 +26,7 @@ export class WishlistsService {
   constructor(
     private readonly createWishlistUseCase: CreateWishlistUseCase,
     private readonly getUserWishlistsUseCase: GetUserWishlistsUseCase,
+    private readonly getFollowingWishlistsUseCase: GetFollowingWishlistsUseCase,
     private readonly getWishlistByIdUseCase: GetWishlistByIdUseCase,
     private readonly findWishlistByIdUseCase: FindWishlistByIdUseCase,
     private readonly findWishlistByIdForGuardianUseCase: FindWishlistByIdForGuardianUseCase,
@@ -47,6 +49,12 @@ export class WishlistsService {
     _userId: string,
   ): Promise<WishlistWithItemsResponseDto[]> {
     return this.getUserWishlistsUseCase.execute(_userId);
+  }
+
+  async getFollowingWishlists(
+    _userId: string,
+  ): Promise<WishlistWithItemsResponseDto[]> {
+    return this.getFollowingWishlistsUseCase.execute(_userId);
   }
 
   async getWishlistById(

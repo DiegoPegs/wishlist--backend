@@ -37,6 +37,12 @@ export class Wishlist {
 
   @Prop({ required: false })
   archivedAt?: Date;
+
+  @Prop({ type: Date, required: false })
+  createdAt?: Date;
+
+  @Prop({ type: Date, required: false })
+  updatedAt?: Date;
 }
 
 export const WishlistSchema = SchemaFactory.createForClass(Wishlist);

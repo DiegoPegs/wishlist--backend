@@ -45,4 +45,12 @@ export class Wishlist {
   @IsOptional()
   @IsDate()
   archivedAt?: Date;
+
+  @IsOptional()
+  @IsDate()
+  createdAt?: Date;
+
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date;
 }

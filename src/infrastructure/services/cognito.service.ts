@@ -13,6 +13,7 @@ import {
   AdminSetUserPasswordCommand,
   AdminDeleteUserCommand,
   GlobalSignOutCommand,
+  ResendConfirmationCodeCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import * as crypto from 'crypto';
 
@@ -250,5 +251,43 @@ export class CognitoService {
     });
 
     await this.cognitoClient.send(command);
+  }
+
+  async resendConfirmationCode(email: string): Promise<void> {
+    const secretHash = this.calculateSecretHash(email);
+
+    const command = new ResendConfirmationCodeCommand({
+      ClientId: this.clientId,
+      Username: email,
+      SecretHash: secretHash,
+    });
+
+    await this.cognitoClient.send(command);
+  }
+
+  async getUserVerificationStatus(email: string): Promise<boolean> {
+    try {
+      const command = new AdminGetUserCommand({
+        UserPoolId: this.userPoolId,
+        Username: email,
+      });
+
+      const response = await this.cognitoClient.send(command);
+
+      if (response.UserAttributes) {
+        const emailVerifiedAttr = response.UserAttributes.find(
+          (attr) => attr.Name === 'email_verified',
+        );
+
+        if (emailVerifiedAttr) {
+          return emailVerifiedAttr.Value === 'true';
+        }
+      }
+
+      return false;
+    } catch (error) {
+      // Se não conseguir buscar o usuário no Cognito, retornar false
+      return false;
+    }
   }
 }

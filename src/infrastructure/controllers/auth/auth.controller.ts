@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { GetAccessToken } from './decorators/get-access-token.decorator';
 import {
@@ -129,5 +130,29 @@ export class AuthController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Reenviar e-mail de confirmação' })
+  @ApiResponse({
+    status: 200,
+    description: 'E-mail de confirmação reenviado com sucesso',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'E-mail já está verificado ou limite de tentativas excedido',
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  async resendVerification(@Request() req: any) {
+    if (!req.user || !req.user._id) {
+      throw new Error('User not found in request');
+    }
+    return await this.authService.resendVerificationEmail(
+      req.user._id.toString(),
+    );
   }
 }

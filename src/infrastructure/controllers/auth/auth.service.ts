@@ -12,6 +12,7 @@ import { ChangePasswordUseCase } from '../../../application/use-cases/auth/chang
 import { LogoutUseCase } from '../../../application/use-cases/auth/logout.use-case';
 import { ForgotPasswordUseCase } from '../../../application/use-cases/auth/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../../../application/use-cases/auth/reset-password.use-case';
+import { ResendVerificationEmailUseCase } from '../../../application/use-cases/auth/resend-verification-email.use-case';
 import { CognitoService } from '../../services/cognito.service';
 import { User } from '../../../domain/entities/user.entity';
 import { UserStatus } from '../../../domain/enums/statuses.enum';
@@ -27,6 +28,7 @@ export class AuthService {
     private readonly logoutUseCase: LogoutUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly resendVerificationEmailUseCase: ResendVerificationEmailUseCase,
     private readonly cognitoService: CognitoService,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
     private readonly jwtService: JwtService,
@@ -227,5 +229,11 @@ export class AuthService {
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
     return await this.resetPasswordUseCase.execute(resetPasswordDto);
+  }
+
+  async resendVerificationEmail(
+    userId: string,
+  ): Promise<{ message: string }> {
+    return await this.resendVerificationEmailUseCase.execute(userId);
   }
 }

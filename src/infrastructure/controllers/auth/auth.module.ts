@@ -12,6 +12,7 @@ import { ChangePasswordUseCase } from '../../../application/use-cases/auth/chang
 import { LogoutUseCase } from '../../../application/use-cases/auth/logout.use-case';
 import { ForgotPasswordUseCase } from '../../../application/use-cases/auth/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../../../application/use-cases/auth/reset-password.use-case';
+import { ResendVerificationEmailUseCase } from '../../../application/use-cases/auth/resend-verification-email.use-case';
 import { CognitoService } from '../../services/cognito.service';
 import { MongoUserRepository } from '../../database/repositories/mongo.user.repository';
 import { User, UserSchema } from '../../database/schemas/user.schema';
@@ -39,6 +40,7 @@ import { User, UserSchema } from '../../database/schemas/user.schema';
     LogoutUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
+    ResendVerificationEmailUseCase,
     CognitoService,
     {
       provide: 'IUserRepository',
